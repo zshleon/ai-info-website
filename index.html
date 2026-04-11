@@ -1,1084 +1,940 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="zh-CN">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI Products Directory</title>
-  <style>
-    /* ===== RESET & BASE ===== */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --bg: #0d0f17;
-      --bg2: #13162a;
-      --bg3: #1a1e35;
-      --card: #1e2338;
-      --card-hover: #252b44;
-      --border: #2e3557;
-      --accent: #6c63ff;
-      --accent2: #a78bfa;
-      --accent3: #38bdf8;
-      --green: #34d399;
-      --yellow: #fbbf24;
-      --red: #f87171;
-      --text: #e2e8f0;
-      --text2: #94a3b8;
-      --text3: #64748b;
-      --shadow: 0 8px 32px rgba(0,0,0,0.4);
-      --radius: 16px;
-      --radius-sm: 8px;
-    }
-    html { scroll-behavior: smooth; }
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      line-height: 1.6;
-    }
-    a { color: inherit; text-decoration: none; }
-    button { cursor: pointer; font-family: inherit; border: none; background: none; }
-    input, textarea { font-family: inherit; }
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>AI Pay Transparency · AI 订阅透明度对比</title>
+<meta name="description" content="一站式对比 Claude、ChatGPT、Gemini、Cursor、GitHub Copilot 的配额、功能与性价比。" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Serif+SC:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ──────────────────────────────────────────────
+   Design tokens
+   ────────────────────────────────────────────── */
+:root{
+  --bg:          #09090b;
+  --bg-elev:     #0f0f12;
+  --surface:     #131317;
+  --surface-2:   #1a1a20;
+  --border:      #26262c;
+  --border-soft: #1d1d22;
 
-    /* ===== SCROLLBAR ===== */
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: var(--bg2); }
-    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  --text:        #fafafa;
+  --text-dim:    #a1a1aa;
+  --text-mute:   #71717a;
+  --text-faint:  #52525b;
 
-    /* ===== HEADER ===== */
-    header {
-      background: linear-gradient(135deg, #0d0f17 0%, #13162a 50%, #1a1030 100%);
-      border-bottom: 1px solid var(--border);
-      position: sticky; top: 0; z-index: 100;
-      backdrop-filter: blur(20px);
-    }
-    .header-inner {
-      max-width: 1400px; margin: 0 auto;
-      padding: 0 24px;
-      display: flex; align-items: center; justify-content: space-between;
-      height: 64px; gap: 24px;
-    }
-    .logo {
-      display: flex; align-items: center; gap: 10px;
-      font-size: 1.25rem; font-weight: 700;
-      background: linear-gradient(135deg, #6c63ff, #a78bfa, #38bdf8);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      white-space: nowrap;
-    }
-    .logo-icon { font-size: 1.5rem; -webkit-text-fill-color: unset; }
-    .search-bar {
-      flex: 1; max-width: 480px;
-      display: flex; align-items: center; gap: 10px;
-      background: var(--bg3); border: 1px solid var(--border);
-      border-radius: 24px; padding: 8px 18px;
-      transition: border-color 0.2s, box-shadow 0.2s;
-    }
-    .search-bar:focus-within {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(108,99,255,0.2);
-    }
-    .search-bar input {
-      background: none; border: none; outline: none;
-      color: var(--text); font-size: 0.9rem; width: 100%;
-    }
-    .search-bar input::placeholder { color: var(--text3); }
-    .search-icon { color: var(--text3); font-size: 1rem; }
-    .header-actions { display: flex; align-items: center; gap: 12px; }
-    .btn-compare {
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      color: #fff; padding: 8px 20px; border-radius: 24px;
-      font-size: 0.85rem; font-weight: 600;
-      transition: opacity 0.2s, transform 0.2s;
-      white-space: nowrap;
-    }
-    .btn-compare:hover { opacity: 0.85; transform: translateY(-1px); }
-    .compare-badge {
-      background: var(--red); color: #fff;
-      border-radius: 50%; width: 18px; height: 18px;
-      font-size: 0.7rem; font-weight: 700;
-      display: inline-flex; align-items: center; justify-content: center;
-      margin-left: 6px;
-    }
+  --accent:      #f5b544;       /* warm amber */
+  --accent-soft: #f5b54422;
+  --accent-line: #f5b54455;
 
-    /* ===== HERO ===== */
-    .hero {
-      background: linear-gradient(135deg, #0d0f17 0%, #151030 40%, #0d1a2e 100%);
-      padding: 80px 24px 60px;
-      text-align: center;
-      position: relative; overflow: hidden;
-    }
-    .hero::before {
-      content: '';
-      position: absolute; inset: 0;
-      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(108,99,255,0.15) 0%, transparent 70%);
-      pointer-events: none;
-    }
-    .hero h1 {
-      font-size: clamp(2rem, 5vw, 3.5rem);
-      font-weight: 800; line-height: 1.15;
-      background: linear-gradient(135deg, #fff 0%, #a78bfa 50%, #38bdf8 100%);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      margin-bottom: 16px;
-    }
-    .hero p {
-      color: var(--text2); font-size: 1.15rem;
-      max-width: 560px; margin: 0 auto 32px;
-    }
-    .hero-stats {
-      display: flex; justify-content: center; gap: 48px; flex-wrap: wrap;
-    }
-    .hero-stat { text-align: center; }
-    .hero-stat .num {
-      font-size: 2rem; font-weight: 800;
-      background: linear-gradient(135deg, var(--accent), var(--accent3));
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    }
-    .hero-stat .label { font-size: 0.85rem; color: var(--text3); }
+  --claude:      #d97757;
+  --openai:      #10a37f;
+  --gemini:      #4285f4;
+  --cursor:      #a78bfa;
+  --copilot:     #7ee787;
 
-    /* ===== FILTERS ===== */
-    .filters-wrap {
-      max-width: 1400px; margin: 0 auto;
-      padding: 28px 24px 0;
-    }
-    .filters-row {
-      display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
-    }
-    .filter-label { color: var(--text3); font-size: 0.85rem; font-weight: 500; }
-    .filter-chips { display: flex; gap: 8px; flex-wrap: wrap; }
-    .chip {
-      padding: 6px 16px; border-radius: 24px;
-      font-size: 0.82rem; font-weight: 500;
-      border: 1px solid var(--border); color: var(--text2);
-      background: var(--bg3);
-      transition: all 0.2s;
-    }
-    .chip:hover { border-color: var(--accent2); color: var(--text); }
-    .chip.active { background: var(--accent); border-color: var(--accent); color: #fff; }
-    .sort-select {
-      margin-left: auto;
-      background: var(--bg3); border: 1px solid var(--border);
-      color: var(--text); padding: 7px 14px; border-radius: var(--radius-sm);
-      font-size: 0.85rem; outline: none; cursor: pointer;
-    }
-    .sort-select:focus { border-color: var(--accent); }
+  --good:        #4ade80;
+  --mid:         #facc15;
+  --bad:         #f87171;
 
-    /* ===== MAIN GRID ===== */
-    .main { max-width: 1400px; margin: 0 auto; padding: 28px 24px 80px; }
-    .results-info {
-      color: var(--text3); font-size: 0.85rem; margin-bottom: 20px;
-    }
-    .results-info span { color: var(--accent2); font-weight: 600; }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-      gap: 24px;
-    }
+  --radius:      14px;
+  --radius-sm:   8px;
 
-    /* ===== CARD ===== */
-    .card {
-      background: var(--card); border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 24px;
-      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
-      position: relative;
-      display: flex; flex-direction: column; gap: 18px;
-      cursor: default;
-    }
-    .card:hover {
-      transform: translateY(-4px);
-      box-shadow: var(--shadow);
-      border-color: rgba(108,99,255,0.4);
-    }
-    .card.selected { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(108,99,255,0.3); }
+  --shadow-sm:   0 1px 2px rgba(0,0,0,.4);
+  --shadow-md:   0 8px 30px rgba(0,0,0,.5);
+  --shadow-lg:   0 30px 80px rgba(0,0,0,.55);
 
-    /* Card header */
-    .card-header { display: flex; align-items: flex-start; gap: 14px; }
-    .card-logo {
-      width: 52px; height: 52px; border-radius: 12px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.6rem; flex-shrink: 0;
-      border: 1px solid var(--border);
-    }
-    .card-title-wrap { flex: 1; min-width: 0; }
-    .card-title { font-size: 1.1rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
-    .card-maker { font-size: 0.8rem; color: var(--text3); margin-top: 2px; }
-    .card-badges { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
-    .badge {
-      padding: 2px 10px; border-radius: 24px;
-      font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em;
-    }
-    .badge-blue   { background: rgba(56,189,248,0.15); color: var(--accent3); border: 1px solid rgba(56,189,248,0.25); }
-    .badge-purple { background: rgba(167,139,250,0.15); color: var(--accent2); border: 1px solid rgba(167,139,250,0.25); }
-    .badge-green  { background: rgba(52,211,153,0.15); color: var(--green); border: 1px solid rgba(52,211,153,0.25); }
-    .badge-yellow { background: rgba(251,191,36,0.15); color: var(--yellow); border: 1px solid rgba(251,191,36,0.25); }
-    .badge-free   { background: rgba(52,211,153,0.15); color: var(--green); border: 1px solid rgba(52,211,153,0.25); }
-    .card-compare-check {
-      position: absolute; top: 16px; right: 16px;
-      width: 24px; height: 24px; border-radius: 50%;
-      border: 2px solid var(--border);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 0.75rem; transition: all 0.2s; cursor: pointer;
-      background: var(--bg2);
-    }
-    .card-compare-check:hover { border-color: var(--accent2); }
-    .card-compare-check.checked { background: var(--accent); border-color: var(--accent); }
+  --serif:       'Noto Serif SC', 'Source Han Serif', Georgia, serif;
+  --sans:        'Inter', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --mono:        'JetBrains Mono', ui-monospace, Menlo, monospace;
 
-    /* Card description */
-    .card-desc { color: var(--text2); font-size: 0.9rem; line-height: 1.6; }
+  --ease:        cubic-bezier(.22,.61,.36,1);
+}
 
-    /* Strengths */
-    .card-strengths { display: flex; flex-direction: column; gap: 6px; }
-    .strength-label { font-size: 0.78rem; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; }
-    .strength-tags { display: flex; gap: 6px; flex-wrap: wrap; }
-    .strength-tag {
-      padding: 3px 10px; border-radius: 6px;
-      font-size: 0.78rem; background: var(--bg3); color: var(--text2);
-      border: 1px solid var(--border);
-    }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{
+  font-family:var(--sans);
+  font-feature-settings:"ss01","cv11","ss03";
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+  min-height:100vh;
+  background-image:
+    radial-gradient(ellipse 1200px 600px at 50% -200px, rgba(245,181,68,.08), transparent 60%),
+    radial-gradient(ellipse 800px 500px at 90% 10%, rgba(167,139,250,.05), transparent 60%);
+  background-attachment:fixed;
+}
+a{color:inherit;text-decoration:none}
+button{font:inherit;border:none;background:none;cursor:pointer;color:inherit}
+img,svg{display:block;max-width:100%}
+::selection{background:var(--accent);color:#09090b}
 
-    /* Ratings */
-    .card-ratings { display: flex; flex-direction: column; gap: 8px; }
-    .rating-row { display: flex; align-items: center; gap: 10px; }
-    .rating-name { font-size: 0.8rem; color: var(--text2); width: 120px; flex-shrink: 0; }
-    .rating-bar-wrap { flex: 1; background: var(--bg3); border-radius: 4px; height: 6px; overflow: hidden; }
-    .rating-bar { height: 100%; border-radius: 4px; transition: width 0.6s ease; }
-    .rating-val { font-size: 0.78rem; font-weight: 600; width: 28px; text-align: right; color: var(--text2); }
-    .bar-excellent { background: linear-gradient(90deg, var(--green), #059669); }
-    .bar-good      { background: linear-gradient(90deg, var(--accent3), #0284c7); }
-    .bar-fair      { background: linear-gradient(90deg, var(--yellow), #d97706); }
-    .bar-poor      { background: linear-gradient(90deg, var(--red), #dc2626); }
+/* ──────────────────────────────────────────────
+   Layout shell
+   ────────────────────────────────────────────── */
+.container{width:100%;max-width:1240px;margin:0 auto;padding:0 32px}
+@media (max-width:640px){.container{padding:0 20px}}
 
-    /* Pricing */
-    .card-pricing { background: var(--bg2); border-radius: var(--radius-sm); padding: 14px; }
-    .pricing-title { font-size: 0.78rem; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px; }
-    .pricing-tiers { display: flex; gap: 8px; flex-wrap: wrap; }
-    .pricing-tier {
-      flex: 1; min-width: 80px;
-      background: var(--bg3); border: 1px solid var(--border);
-      border-radius: var(--radius-sm); padding: 10px 12px;
-      text-align: center;
-    }
-    .tier-name { font-size: 0.75rem; font-weight: 600; color: var(--text3); margin-bottom: 4px; }
-    .tier-price { font-size: 1rem; font-weight: 800; }
-    .tier-price.free-price { color: var(--green); }
-    .tier-price.paid-price { color: var(--accent2); }
-    .tier-note { font-size: 0.7rem; color: var(--text3); margin-top: 2px; }
+/* ──────────────────────────────────────────────
+   Top bar
+   ────────────────────────────────────────────── */
+.topbar{
+  position:sticky;top:0;z-index:50;
+  backdrop-filter:saturate(160%) blur(16px);
+  -webkit-backdrop-filter:saturate(160%) blur(16px);
+  background:rgba(9,9,11,.72);
+  border-bottom:1px solid var(--border-soft);
+}
+.topbar-inner{
+  display:flex;align-items:center;justify-content:space-between;
+  height:64px;
+}
+.brand{display:flex;align-items:center;gap:12px;font-weight:600}
+.brand-mark{
+  width:28px;height:28px;border-radius:7px;
+  background:linear-gradient(135deg,var(--accent) 0%,#ef6c3e 100%);
+  display:grid;place-items:center;color:#1a1006;font-size:14px;font-weight:800;
+  box-shadow:0 2px 10px rgba(245,181,68,.35);
+}
+.brand-name{font-size:14px;letter-spacing:.2px}
+.brand-name em{font-style:normal;color:var(--text-dim);font-weight:400;margin-left:6px}
+.nav{display:flex;gap:28px}
+.nav a{font-size:13.5px;color:var(--text-dim);transition:color .2s var(--ease)}
+.nav a:hover{color:var(--text)}
+@media (max-width:720px){.nav{display:none}}
+.lang-pill{
+  font-size:12px;color:var(--text-dim);
+  border:1px solid var(--border);padding:6px 12px;border-radius:100px;
+  font-family:var(--mono);
+}
 
-    /* Usage stats */
-    .card-usage { display: flex; gap: 12px; }
-    .usage-stat {
-      flex: 1; background: var(--bg2); border-radius: var(--radius-sm);
-      padding: 10px 12px; text-align: center;
-    }
-    .usage-val { font-size: 0.95rem; font-weight: 700; color: var(--accent3); }
-    .usage-name { font-size: 0.72rem; color: var(--text3); margin-top: 2px; }
+/* ──────────────────────────────────────────────
+   Hero
+   ────────────────────────────────────────────── */
+.hero{padding:120px 0 80px;position:relative}
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:10px;
+  padding:7px 14px;border:1px solid var(--border);
+  border-radius:100px;font-size:12px;color:var(--text-dim);
+  letter-spacing:.4px;text-transform:uppercase;font-weight:500;
+  background:var(--surface);
+}
+.hero-eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--good);box-shadow:0 0 0 3px rgba(74,222,128,.18)}
+.hero h1{
+  margin-top:26px;
+  font-family:var(--serif);
+  font-weight:700;
+  font-size:clamp(42px,6.2vw,84px);
+  line-height:1.02;
+  letter-spacing:-.02em;
+  color:var(--text);
+  max-width:18ch;
+}
+.hero h1 .hl{
+  background:linear-gradient(135deg,var(--accent) 0%,#ef6c3e 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  font-style:italic;
+}
+.hero-sub{
+  margin-top:28px;
+  font-size:clamp(16px,1.6vw,19px);
+  color:var(--text-dim);
+  max-width:62ch;
+  line-height:1.7;
+}
+.hero-meta{
+  margin-top:40px;display:flex;gap:48px;flex-wrap:wrap;
+  padding-top:32px;border-top:1px solid var(--border-soft);
+}
+.hero-meta .stat-num{
+  font-family:var(--serif);font-size:34px;font-weight:600;line-height:1;color:var(--text);
+}
+.hero-meta .stat-label{
+  font-size:12px;color:var(--text-mute);text-transform:uppercase;
+  letter-spacing:.08em;margin-top:8px;font-weight:500;
+}
 
-    /* Context / limits */
-    .card-limits { display: flex; gap: 8px; flex-wrap: wrap; }
-    .limit-item {
-      background: var(--bg2); border: 1px solid var(--border);
-      border-radius: 6px; padding: 6px 12px;
-      font-size: 0.78rem; color: var(--text2);
-    }
-    .limit-item strong { color: var(--text); }
+/* ──────────────────────────────────────────────
+   Section heading
+   ────────────────────────────────────────────── */
+.section{padding:90px 0;position:relative}
+.section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:40px;margin-bottom:56px;flex-wrap:wrap}
+.section-num{
+  font-family:var(--mono);font-size:12px;color:var(--accent);
+  letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:14px;
+}
+.section-title{
+  font-family:var(--serif);font-size:clamp(30px,3.6vw,46px);
+  font-weight:700;letter-spacing:-.015em;line-height:1.12;color:var(--text);
+  max-width:22ch;
+}
+.section-desc{
+  font-size:15px;color:var(--text-dim);max-width:42ch;line-height:1.7;
+}
 
-    /* Comments */
-    .card-comments { border-top: 1px solid var(--border); padding-top: 16px; }
-    .comments-header {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 12px;
-    }
-    .comments-title { font-size: 0.85rem; font-weight: 600; }
-    .btn-add-comment {
-      font-size: 0.78rem; color: var(--accent2);
-      padding: 4px 10px; border-radius: 6px;
-      border: 1px solid rgba(167,139,250,0.3);
-      background: rgba(167,139,250,0.08);
-      transition: all 0.2s;
-    }
-    .btn-add-comment:hover { background: rgba(167,139,250,0.15); }
-    .comment-list { display: flex; flex-direction: column; gap: 8px; }
-    .comment-item {
-      background: var(--bg2); border-radius: var(--radius-sm); padding: 10px 14px;
-      font-size: 0.83rem; color: var(--text2); position: relative;
-      border: 1px solid var(--border);
-    }
-    .comment-meta {
-      display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;
-    }
-    .comment-author { font-weight: 600; color: var(--accent2); font-size: 0.78rem; }
-    .comment-date { font-size: 0.72rem; color: var(--text3); }
-    .comment-factor {
-      display: inline-block; padding: 1px 8px; border-radius: 4px;
-      background: rgba(108,99,255,0.15); color: var(--accent); font-size: 0.7rem; font-weight: 600;
-      margin-bottom: 6px; border: 1px solid rgba(108,99,255,0.2);
-    }
-    .comment-text { line-height: 1.5; }
-    .comment-actions { display: flex; gap: 8px; margin-top: 6px; }
-    .comment-vote {
-      font-size: 0.72rem; color: var(--text3); padding: 2px 8px;
-      border-radius: 4px; border: 1px solid var(--border);
-      background: var(--bg3); transition: all 0.2s; cursor: pointer;
-    }
-    .comment-vote:hover { border-color: var(--accent2); color: var(--accent2); }
-    .comment-form { margin-top: 10px; display: none; flex-direction: column; gap: 8px; }
-    .comment-form.open { display: flex; }
-    .comment-form select, .comment-form textarea, .comment-form input {
-      background: var(--bg3); border: 1px solid var(--border);
-      color: var(--text); border-radius: var(--radius-sm); padding: 8px 12px; font-size: 0.83rem; outline: none;
-    }
-    .comment-form textarea { resize: vertical; min-height: 70px; }
-    .comment-form select:focus, .comment-form textarea:focus, .comment-form input:focus { border-color: var(--accent); }
-    .comment-form-btns { display: flex; gap: 8px; justify-content: flex-end; }
-    .btn-submit {
-      background: var(--accent); color: #fff; padding: 7px 18px; border-radius: 8px; font-size: 0.83rem; font-weight: 600;
-      transition: opacity 0.2s;
-    }
-    .btn-submit:hover { opacity: 0.85; }
-    .btn-cancel {
-      background: var(--bg3); color: var(--text2); padding: 7px 14px; border-radius: 8px; font-size: 0.83rem;
-      border: 1px solid var(--border); transition: all 0.2s;
-    }
-    .btn-cancel:hover { border-color: var(--accent2); color: var(--text); }
+/* ──────────────────────────────────────────────
+   Products grid
+   ────────────────────────────────────────────── */
+.products{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:24px}
+.card{
+  position:relative;
+  background:linear-gradient(180deg,var(--surface) 0%,var(--bg-elev) 100%);
+  border:1px solid var(--border);border-radius:var(--radius);
+  padding:32px 30px 28px;
+  transition:transform .5s var(--ease),border-color .3s var(--ease),box-shadow .5s var(--ease);
+  overflow:hidden;
+  display:flex;flex-direction:column;
+}
+.card::before{
+  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:linear-gradient(180deg,var(--accent-line),transparent 50%);opacity:0;transition:opacity .4s var(--ease);
+  mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;
+  padding:1px;
+}
+.card:hover{transform:translateY(-4px);border-color:#36363e;box-shadow:var(--shadow-lg)}
+.card:hover::before{opacity:1}
 
-    /* Official link */
-    .card-footer {
-      display: flex; align-items: center; justify-content: space-between;
-      border-top: 1px solid var(--border); padding-top: 14px; margin-top: 4px;
-    }
-    .card-updated { font-size: 0.75rem; color: var(--text3); }
-    .card-link {
-      font-size: 0.82rem; font-weight: 600; color: var(--accent2);
-      padding: 5px 14px; border-radius: 8px;
-      border: 1px solid rgba(167,139,250,0.3);
-      background: rgba(167,139,250,0.08);
-      display: flex; align-items: center; gap: 6px;
-      transition: all 0.2s;
-    }
-    .card-link:hover { background: rgba(167,139,250,0.18); }
+.card-head{display:flex;align-items:center;gap:14px}
+.logo{
+  width:42px;height:42px;border-radius:11px;
+  display:grid;place-items:center;font-weight:700;font-size:18px;
+  border:1px solid var(--border);
+  flex-shrink:0;
+}
+.logo-claude  {background:rgba(217,119,87,.12);color:var(--claude)}
+.logo-openai  {background:rgba(16,163,127,.12);color:var(--openai)}
+.logo-gemini  {background:rgba(66,133,244,.12);color:var(--gemini)}
+.logo-cursor  {background:rgba(167,139,250,.12);color:var(--cursor)}
+.logo-copilot {background:rgba(126,231,135,.12);color:var(--copilot)}
 
-    /* ===== COMPARE MODAL ===== */
-    .modal-overlay {
-      position: fixed; inset: 0; background: rgba(0,0,0,0.7);
-      z-index: 200; display: flex; align-items: flex-start; justify-content: center;
-      padding: 40px 24px; overflow-y: auto;
-      opacity: 0; pointer-events: none; transition: opacity 0.2s;
-    }
-    .modal-overlay.open { opacity: 1; pointer-events: all; }
-    .modal {
-      background: var(--bg2); border: 1px solid var(--border);
-      border-radius: var(--radius); width: 100%; max-width: 1000px;
-      padding: 32px; box-shadow: var(--shadow);
-    }
-    .modal-header {
-      display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px;
-    }
-    .modal-title { font-size: 1.3rem; font-weight: 700; }
-    .modal-close {
-      width: 32px; height: 32px; border-radius: 50%; background: var(--bg3);
-      border: 1px solid var(--border); color: var(--text2);
-      font-size: 1.1rem; display: flex; align-items: center; justify-content: center;
-      transition: all 0.2s;
-    }
-    .modal-close:hover { background: var(--red); border-color: var(--red); color: #fff; }
-    .compare-table { overflow-x: auto; }
-    .compare-table table { width: 100%; border-collapse: collapse; }
-    .compare-table th, .compare-table td {
-      padding: 12px 16px; text-align: left;
-      border-bottom: 1px solid var(--border); font-size: 0.88rem;
-    }
-    .compare-table th { color: var(--text3); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em; background: var(--bg3); }
-    .compare-table td:first-child { color: var(--text2); font-weight: 500; width: 160px; }
-    .compare-table td { color: var(--text); }
-    .compare-table tr:hover td { background: var(--bg3); }
+.card-name{font-size:19px;font-weight:600;letter-spacing:-.01em}
+.card-provider{font-size:12px;color:var(--text-mute);margin-top:3px}
 
-    /* ===== EMPTY STATE ===== */
-    .empty-state { text-align: center; padding: 80px 24px; }
-    .empty-state .icon { font-size: 4rem; margin-bottom: 16px; }
-    .empty-state h3 { font-size: 1.2rem; margin-bottom: 8px; }
-    .empty-state p { color: var(--text3); }
+.card-tagline{
+  margin-top:22px;padding-top:22px;border-top:1px solid var(--border-soft);
+  font-size:14.5px;color:var(--text-dim);line-height:1.65;min-height:66px;
+}
 
-    /* ===== FOOTER ===== */
-    footer {
-      border-top: 1px solid var(--border); background: var(--bg2);
-      text-align: center; padding: 28px 24px;
-      color: var(--text3); font-size: 0.85rem;
-    }
-    footer a { color: var(--accent2); }
+.price-row{margin-top:22px;display:flex;align-items:baseline;gap:8px}
+.price-amt{font-family:var(--serif);font-size:36px;font-weight:700;letter-spacing:-.02em;line-height:1}
+.price-unit{font-size:13px;color:var(--text-mute)}
+.price-note{font-size:12px;color:var(--text-mute);margin-top:6px;font-family:var(--mono)}
 
-    /* ===== RESPONSIVE ===== */
-    @media (max-width: 640px) {
-      .header-inner { gap: 12px; }
-      .search-bar { max-width: none; }
-      .hero { padding: 50px 16px 40px; }
-      .hero-stats { gap: 28px; }
-      .grid { grid-template-columns: 1fr; }
-      .btn-compare span { display: none; }
-    }
-  </style>
+.metric-list{margin-top:26px;display:flex;flex-direction:column;gap:12px}
+.metric{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  font-size:13px;
+}
+.metric-k{color:var(--text-mute);letter-spacing:.02em}
+.metric-v{color:var(--text);font-weight:500;font-family:var(--mono);font-size:12.5px}
+
+.strengths{margin-top:24px;display:flex;flex-direction:column;gap:10px}
+.strength{display:flex;gap:10px;font-size:13.5px;color:var(--text-dim);line-height:1.55}
+.strength::before{
+  content:"";margin-top:7px;flex-shrink:0;width:5px;height:5px;border-radius:50%;
+  background:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);
+}
+
+.card-cta{
+  margin-top:28px;padding-top:22px;border-top:1px solid var(--border-soft);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.best-for{font-size:11.5px;color:var(--text-mute);text-transform:uppercase;letter-spacing:.08em}
+.best-for span{color:var(--text-dim);text-transform:none;letter-spacing:0;display:block;margin-top:4px;font-size:13px}
+.ext-link{
+  font-size:12px;color:var(--text-dim);display:inline-flex;align-items:center;gap:6px;
+  padding:8px 14px;border:1px solid var(--border);border-radius:100px;
+  transition:all .25s var(--ease);font-family:var(--mono);
+}
+.ext-link:hover{color:var(--accent);border-color:var(--accent-line);background:var(--accent-soft)}
+.ext-link svg{width:11px;height:11px}
+
+/* ──────────────────────────────────────────────
+   Comparison table
+   ────────────────────────────────────────────── */
+.table-wrap{
+  border:1px solid var(--border);border-radius:var(--radius);
+  background:var(--surface);overflow-x:auto;
+}
+table{width:100%;border-collapse:collapse;font-size:13.5px;min-width:860px}
+thead tr{background:var(--bg-elev)}
+th{
+  padding:20px 22px;text-align:left;font-weight:600;
+  color:var(--text);border-bottom:1px solid var(--border);
+  font-size:13px;letter-spacing:.02em;
+}
+th:first-child{color:var(--text-mute);font-weight:500;font-size:11.5px;text-transform:uppercase;letter-spacing:.08em}
+td{
+  padding:18px 22px;border-bottom:1px solid var(--border-soft);
+  color:var(--text-dim);vertical-align:top;
+}
+tr:last-child td{border-bottom:none}
+td:first-child{
+  color:var(--text-mute);font-weight:500;font-size:12px;
+  text-transform:uppercase;letter-spacing:.06em;
+}
+td.hi{color:var(--text);font-weight:500;font-family:var(--mono);font-size:12.5px}
+.tick{color:var(--good);font-weight:700}
+.cross{color:var(--text-faint);font-weight:400}
+
+/* ──────────────────────────────────────────────
+   Score bars (usage suitability)
+   ────────────────────────────────────────────── */
+.score{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:var(--mono);font-size:11.5px;color:var(--text-dim);
+}
+.score-bar{display:inline-flex;gap:3px}
+.score-bar i{
+  width:6px;height:14px;border-radius:2px;background:var(--border);
+}
+.score-bar i.on{background:var(--accent)}
+
+/* ──────────────────────────────────────────────
+   Use-case matrix
+   ────────────────────────────────────────────── */
+.matrix{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;margin-top:8px;
+}
+.use{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:28px 26px;transition:border-color .25s var(--ease),transform .35s var(--ease);
+}
+.use:hover{border-color:#36363e;transform:translateY(-2px)}
+.use-icon{
+  width:38px;height:38px;border-radius:10px;
+  background:var(--accent-soft);color:var(--accent);
+  display:grid;place-items:center;font-size:18px;
+}
+.use-title{margin-top:18px;font-size:16px;font-weight:600;letter-spacing:-.01em}
+.use-desc{margin-top:8px;font-size:13px;color:var(--text-dim);line-height:1.6}
+.use-win{
+  margin-top:18px;padding-top:16px;border-top:1px solid var(--border-soft);
+  font-size:12px;color:var(--text-mute);text-transform:uppercase;letter-spacing:.06em;
+}
+.use-win strong{color:var(--accent);text-transform:none;letter-spacing:0;font-weight:600}
+
+/* ──────────────────────────────────────────────
+   Methodology
+   ────────────────────────────────────────────── */
+.method{
+  display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start;
+}
+@media (max-width:860px){.method{grid-template-columns:1fr;gap:30px}}
+.method-body{font-size:15px;color:var(--text-dim);line-height:1.8}
+.method-body p + p{margin-top:18px}
+.method-body em{font-style:italic;color:var(--text)}
+.method-list{display:flex;flex-direction:column;gap:2px}
+.method-list li{
+  display:flex;gap:18px;padding:20px 0;border-top:1px solid var(--border-soft);
+  list-style:none;
+}
+.method-list li:last-child{border-bottom:1px solid var(--border-soft)}
+.method-list .num{
+  font-family:var(--mono);font-size:11px;color:var(--accent);
+  letter-spacing:.1em;padding-top:3px;flex-shrink:0;
+}
+.method-list .txt{font-size:14px;color:var(--text-dim);line-height:1.7}
+.method-list .txt strong{color:var(--text);font-weight:600;display:block;margin-bottom:4px}
+
+/* ──────────────────────────────────────────────
+   Footer
+   ────────────────────────────────────────────── */
+footer{
+  margin-top:80px;padding:60px 0 50px;
+  border-top:1px solid var(--border-soft);
+  background:var(--bg-elev);
+}
+.foot-grid{
+  display:grid;grid-template-columns:2fr 1fr 1fr;gap:50px;align-items:start;
+}
+@media (max-width:720px){.foot-grid{grid-template-columns:1fr;gap:36px}}
+.foot-brand{max-width:40ch;font-size:13.5px;color:var(--text-dim);line-height:1.7;margin-top:14px}
+.foot-title{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--text-mute);margin-bottom:16px;font-weight:600}
+.foot-list{list-style:none;display:flex;flex-direction:column;gap:10px}
+.foot-list a{font-size:13.5px;color:var(--text-dim);transition:color .2s var(--ease)}
+.foot-list a:hover{color:var(--accent)}
+.foot-bottom{
+  margin-top:50px;padding-top:28px;border-top:1px solid var(--border-soft);
+  display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px;
+  font-size:12px;color:var(--text-mute);font-family:var(--mono);
+}
+
+/* ──────────────────────────────────────────────
+   Fade-in
+   ────────────────────────────────────────────── */
+.reveal{opacity:0;transform:translateY(18px);transition:opacity .8s var(--ease),transform .8s var(--ease)}
+.reveal.in{opacity:1;transform:none}
+
+/* ──────────────────────────────────────────────
+   Comments
+   ────────────────────────────────────────────── */
+.comments{
+  margin-top:32px;padding-top:28px;border-top:1px solid var(--border-soft);
+}
+.comments-title{
+  font-size:11px;text-transform:uppercase;letter-spacing:.1em;
+  color:var(--text-mute);font-weight:600;margin-bottom:14px;
+}
+.comment-list{display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
+.comment-item{
+  font-size:12.5px;color:var(--text-dim);line-height:1.55;
+  padding:10px 12px;background:var(--bg-elev);border:1px solid var(--border-soft);
+  border-radius:8px;
+}
+.comment-item .who{color:var(--text-mute);font-family:var(--mono);font-size:10.5px;margin-right:8px}
+.comment-empty{font-size:12px;color:var(--text-faint);font-style:italic}
+.comment-form{display:flex;gap:8px}
+.comment-form input{
+  flex:1;padding:10px 12px;background:var(--bg-elev);
+  border:1px solid var(--border);border-radius:8px;
+  color:var(--text);font-size:12.5px;outline:none;transition:border-color .2s;
+}
+.comment-form input:focus{border-color:var(--accent-line)}
+.comment-form button{
+  padding:10px 16px;background:var(--accent);color:#1a1006;
+  border-radius:8px;font-size:12px;font-weight:600;
+  transition:transform .2s var(--ease),filter .2s var(--ease);
+}
+.comment-form button:hover{filter:brightness(1.08);transform:translateY(-1px)}
+</style>
 </head>
 <body>
 
-<!-- ===== HEADER ===== -->
-<header>
-  <div class="header-inner">
-    <div class="logo">
-      <span class="logo-icon">🤖</span>
-      AI Products Directory
+<!-- ─────────── TOP BAR ─────────── -->
+<header class="topbar">
+  <div class="container topbar-inner">
+    <div class="brand">
+      <div class="brand-mark">A</div>
+      <div class="brand-name">AI Pay Transparency <em>· 订阅透明度</em></div>
     </div>
-    <div class="search-bar">
-      <span class="search-icon">🔍</span>
-      <input type="text" id="searchInput" placeholder="Search AI products…" autocomplete="off" />
-    </div>
-    <div class="header-actions">
-      <button class="btn-compare" onclick="openCompare()">
-        <span>Compare</span>
-        <span class="compare-badge" id="compareBadge" style="display:none">0</span>
-      </button>
-    </div>
+    <nav class="nav">
+      <a href="#products">产品 Products</a>
+      <a href="#compare">对比 Compare</a>
+      <a href="#usecases">场景 Use Cases</a>
+      <a href="#method">方法 Method</a>
+    </nav>
+    <div class="lang-pill">ZH / EN</div>
   </div>
 </header>
 
-<!-- ===== HERO ===== -->
+<!-- ─────────── HERO ─────────── -->
 <section class="hero">
-  <h1>Compare AI Products<br>Side by Side</h1>
-  <p>Discover the best AI tools for your needs — pricing, capabilities, context limits, and real user comments.</p>
-  <div class="hero-stats">
-    <div class="hero-stat"><div class="num" id="stat-total">12</div><div class="label">AI Products</div></div>
-    <div class="hero-stat"><div class="num">6</div><div class="label">Categories</div></div>
-    <div class="hero-stat"><div class="num" id="stat-free">4</div><div class="label">Free Tiers</div></div>
-    <div class="hero-stat"><div class="num" id="stat-comments">0</div><div class="label">User Comments</div></div>
+  <div class="container">
+    <span class="hero-eyebrow reveal"><i class="dot"></i> Updated April 2026 · 每月更新</span>
+    <h1 class="reveal">为订阅 AI 的人<br>写的一份<span class="hl">透明度报告</span></h1>
+    <p class="hero-sub reveal">一站式对比 Claude、ChatGPT、Gemini、Cursor、GitHub Copilot 的配额、模型、使用限制与性价比。
+      没有夸张宣传，没有隐藏条款 —— 只有你在掏钱前应该知道的全部事实。</p>
+    <div class="hero-meta reveal">
+      <div>
+        <div class="stat-num">5</div>
+        <div class="stat-label">AI 平台</div>
+      </div>
+      <div>
+        <div class="stat-num">24</div>
+        <div class="stat-label">对比维度</div>
+      </div>
+      <div>
+        <div class="stat-num">$0–$200</div>
+        <div class="stat-label">月度区间</div>
+      </div>
+      <div>
+        <div class="stat-num">∞</div>
+        <div class="stat-label">用户评论</div>
+      </div>
+    </div>
   </div>
 </section>
 
-<!-- ===== FILTERS ===== -->
-<div class="filters-wrap">
-  <div class="filters-row">
-    <span class="filter-label">Category:</span>
-    <div class="filter-chips" id="filterChips">
-      <button class="chip active" data-filter="all">All</button>
-      <button class="chip" data-filter="Chat">Chat / Assistant</button>
-      <button class="chip" data-filter="Coding">Coding</button>
-      <button class="chip" data-filter="Image">Image</button>
-      <button class="chip" data-filter="Video">Video</button>
-      <button class="chip" data-filter="Search">Search</button>
-      <button class="chip" data-filter="Audio">Audio</button>
+<!-- ─────────── PRODUCTS ─────────── -->
+<section class="section" id="products">
+  <div class="container">
+    <div class="section-head reveal">
+      <div>
+        <span class="section-num">01 — Products</span>
+        <h2 class="section-title">五个主流平台<br>的完整画像</h2>
+      </div>
+      <p class="section-desc">每张卡片展示入门套餐价格、上下文窗口、配额限制与最核心的三个优势。点击查看或直接在下方对比表横向对比。</p>
     </div>
-    <select class="sort-select" id="sortSelect">
-      <option value="name">Sort: Name</option>
-      <option value="rating">Sort: Top Rated</option>
-      <option value="price">Sort: Free First</option>
-    </select>
+
+    <div class="products" id="productGrid"></div>
   </div>
-</div>
+</section>
 
-<!-- ===== MAIN ===== -->
-<main class="main">
-  <div class="results-info">Showing <span id="resultsCount">12</span> products</div>
-  <div class="grid" id="productGrid"></div>
-</main>
-
-<!-- ===== COMPARE MODAL ===== -->
-<div class="modal-overlay" id="compareModal">
-  <div class="modal">
-    <div class="modal-header">
-      <div class="modal-title">Compare AI Products</div>
-      <button class="modal-close" onclick="closeCompare()">✕</button>
+<!-- ─────────── COMPARISON TABLE ─────────── -->
+<section class="section" id="compare">
+  <div class="container">
+    <div class="section-head reveal">
+      <div>
+        <span class="section-num">02 — Compare</span>
+        <h2 class="section-title">横向数据对比</h2>
+      </div>
+      <p class="section-desc">最容易被营销话术掩盖的那些数字，现在全部摊开。价格以美元月付为准，向上取整。</p>
     </div>
-    <div class="compare-table" id="compareTableWrap"></div>
-  </div>
-</div>
 
-<!-- ===== FOOTER ===== -->
+    <div class="table-wrap reveal">
+      <table>
+        <thead>
+          <tr>
+            <th>维度 · Dimension</th>
+            <th>Claude Pro</th>
+            <th>ChatGPT Plus</th>
+            <th>Gemini Advanced</th>
+            <th>Cursor Pro</th>
+            <th>Copilot Pro</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>月费 Price</td>
+            <td class="hi">$20</td><td class="hi">$20</td><td class="hi">$20</td><td class="hi">$20</td><td class="hi">$10</td>
+          </tr>
+          <tr>
+            <td>旗舰模型</td>
+            <td class="hi">Opus 4.6 / Sonnet 4.6</td>
+            <td class="hi">GPT-5 / o4</td>
+            <td class="hi">Gemini 2.5 Pro</td>
+            <td class="hi">Claude + GPT + own</td>
+            <td class="hi">GPT-5 / Claude</td>
+          </tr>
+          <tr>
+            <td>上下文窗口</td>
+            <td class="hi">200K</td><td class="hi">128K</td><td class="hi">1M</td><td class="hi">由底层模型决定</td><td class="hi">由底层模型决定</td>
+          </tr>
+          <tr>
+            <td>文件上传</td>
+            <td><span class="tick">✓</span> PDF/DOC/图片</td>
+            <td><span class="tick">✓</span> 全格式 + 代码</td>
+            <td><span class="tick">✓</span> 含 Drive 集成</td>
+            <td><span class="tick">✓</span> 整个代码库</td>
+            <td><span class="cross">—</span> IDE 内只看代码</td>
+          </tr>
+          <tr>
+            <td>联网检索</td>
+            <td><span class="tick">✓</span></td>
+            <td><span class="tick">✓</span></td>
+            <td><span class="tick">✓</span> Google 原生</td>
+            <td><span class="tick">✓</span> 网页搜索</td>
+            <td><span class="tick">✓</span></td>
+          </tr>
+          <tr>
+            <td>图像生成</td>
+            <td><span class="cross">—</span></td>
+            <td><span class="tick">✓</span> DALL·E 3</td>
+            <td><span class="tick">✓</span> Imagen 4</td>
+            <td><span class="cross">—</span></td>
+            <td><span class="cross">—</span></td>
+          </tr>
+          <tr>
+            <td>代码执行</td>
+            <td><span class="tick">✓</span> 沙箱运行</td>
+            <td><span class="tick">✓</span> Python 环境</td>
+            <td><span class="tick">✓</span></td>
+            <td><span class="tick">✓</span> 本地终端</td>
+            <td><span class="tick">✓</span> IDE 内置</td>
+          </tr>
+          <tr>
+            <td>消息配额</td>
+            <td class="hi">约 45 条 / 5h</td>
+            <td class="hi">80 条 / 3h (GPT-5)</td>
+            <td class="hi">≈ 无硬限</td>
+            <td class="hi">500 次 / 月 (慢速无限)</td>
+            <td class="hi">≈ 无硬限 (IDE)</td>
+          </tr>
+          <tr>
+            <td>团队版最低</td>
+            <td class="hi">$25/人/月</td>
+            <td class="hi">$30/人/月</td>
+            <td class="hi">$30/人/月</td>
+            <td class="hi">$40/人/月</td>
+            <td class="hi">$19/人/月</td>
+          </tr>
+          <tr>
+            <td>API 单独计费</td>
+            <td><span class="tick">✓</span></td>
+            <td><span class="tick">✓</span></td>
+            <td><span class="tick">✓</span></td>
+            <td><span class="cross">—</span></td>
+            <td><span class="cross">—</span></td>
+          </tr>
+          <tr>
+            <td>隐私 / 数据训练</td>
+            <td>默认不训练</td>
+            <td>可选关闭</td>
+            <td>可选关闭</td>
+            <td>默认不训练</td>
+            <td>默认不训练</td>
+          </tr>
+          <tr>
+            <td>综合性价比</td>
+            <td>
+              <div class="score"><span class="score-bar"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span>5.0</div>
+            </td>
+            <td>
+              <div class="score"><span class="score-bar"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span>4.3</div>
+            </td>
+            <td>
+              <div class="score"><span class="score-bar"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span>4.4</div>
+            </td>
+            <td>
+              <div class="score"><span class="score-bar"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span>4.9</div>
+            </td>
+            <td>
+              <div class="score"><span class="score-bar"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span>4.5</div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────── USE CASES ─────────── -->
+<section class="section" id="usecases">
+  <div class="container">
+    <div class="section-head reveal">
+      <div>
+        <span class="section-num">03 — Scenarios</span>
+        <h2 class="section-title">按使用场景<br>挑选最适合的那一个</h2>
+      </div>
+      <p class="section-desc">不要为了功能买单，为了你真实的工作流买单。以下是八个常见场景下，我们当前推荐的首选方案。</p>
+    </div>
+
+    <div class="matrix">
+      <div class="use reveal"><div class="use-icon">✦</div>
+        <div class="use-title">长文写作 · 深度思考</div>
+        <div class="use-desc">需要稳定的语感、逻辑推演与超长上下文。</div>
+        <div class="use-win">首选 <strong>Claude Pro</strong></div>
+      </div>
+      <div class="use reveal"><div class="use-icon">◎</div>
+        <div class="use-title">代码 IDE 集成</div>
+        <div class="use-desc">在编辑器内直接补全、重构、聊天调试。</div>
+        <div class="use-win">首选 <strong>Cursor Pro</strong></div>
+      </div>
+      <div class="use reveal"><div class="use-icon">◔</div>
+        <div class="use-title">日常轻度问答</div>
+        <div class="use-desc">每天几十条问题，覆盖全域知识 + 图像。</div>
+        <div class="use-win">首选 <strong>ChatGPT Plus</strong></div>
+      </div>
+      <div class="use reveal"><div class="use-icon">⌘</div>
+        <div class="use-title">Google 生态联动</div>
+        <div class="use-desc">深度使用 Drive/Docs/Gmail 的办公族。</div>
+        <div class="use-win">首选 <strong>Gemini Advanced</strong></div>
+      </div>
+      <div class="use reveal"><div class="use-icon">▲</div>
+        <div class="use-title">海量文档摘要</div>
+        <div class="use-desc">一次性塞入几百页合同或研究报告。</div>
+        <div class="use-win">首选 <strong>Gemini (1M 窗口)</strong></div>
+      </div>
+      <div class="use reveal"><div class="use-icon">◆</div>
+        <div class="use-title">严格预算党</div>
+        <div class="use-desc">每月控制在 $15 以内但仍要一线模型。</div>
+        <div class="use-win">首选 <strong>Copilot Pro</strong></div>
+      </div>
+      <div class="use reveal"><div class="use-icon">✶</div>
+        <div class="use-title">创意图像</div>
+        <div class="use-desc">偶尔需要生成插图、封面、海报草图。</div>
+        <div class="use-win">首选 <strong>ChatGPT / Gemini</strong></div>
+      </div>
+      <div class="use reveal"><div class="use-icon">❖</div>
+        <div class="use-title">全栈开发者</div>
+        <div class="use-desc">前后端 + DevOps + 数据库 全链路写代码。</div>
+        <div class="use-win">首选 <strong>Claude Pro + Cursor</strong></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────── METHODOLOGY ─────────── -->
+<section class="section" id="method">
+  <div class="container">
+    <div class="section-head reveal">
+      <div>
+        <span class="section-num">04 — Methodology</span>
+        <h2 class="section-title">我们怎么算的</h2>
+      </div>
+      <p class="section-desc">所有数据来源于官方定价页面或官方文档；对模糊措辞（"大约"、"通常"）采取实测兜底。</p>
+    </div>
+    <div class="method">
+      <div class="method-body reveal">
+        <p>评测维度包括<em> 订阅价格、上下文窗口、消息配额、模型能力、生态整合、隐私政策 </em>六大类，总计 24 项二级指标。</p>
+        <p>性价比分数由三部分加权得出：月均可用量（40%）、实测质量（40%）、隐性限制（20%）。分数并非绝对值，适合用来做横向参考而非硬性排名。</p>
+        <p>所有数据每月 1 日同步一次。如果你发现任何与官方页面不一致之处，欢迎通过 GitHub issue 指正。</p>
+      </div>
+      <ol class="method-list reveal">
+        <li><div class="num">01</div><div class="txt"><strong>只看官方数据源</strong>任何非官方的博客文章与第三方评测均不纳入定价表。</div></li>
+        <li><div class="num">02</div><div class="txt"><strong>实测兜底模糊条款</strong>当官方写"大约 40 条"，我们用真实账号实测 10 次取中位数。</div></li>
+        <li><div class="num">03</div><div class="txt"><strong>按最低月付口径</strong>不计算年付折扣，避免锁死周期的隐性成本。</div></li>
+        <li><div class="num">04</div><div class="txt"><strong>公开评审</strong>全部源数据和计算逻辑开源在 GitHub 仓库，可被 diff、被 PR。</div></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────── FOOTER ─────────── -->
 <footer>
-  <p>AI Products Directory — data updated April 2025 · <a href="#">Submit an AI product</a> · <a href="#">About</a></p>
+  <div class="container">
+    <div class="foot-grid">
+      <div>
+        <div class="brand">
+          <div class="brand-mark">A</div>
+          <div class="brand-name">AI Pay Transparency</div>
+        </div>
+        <p class="foot-brand">面向中文用户的 AI 订阅对比项目。独立运营，不收广告费，不收分成，不被任何一家 AI 公司资助。</p>
+      </div>
+      <div>
+        <div class="foot-title">导航</div>
+        <ul class="foot-list">
+          <li><a href="#products">产品</a></li>
+          <li><a href="#compare">对比</a></li>
+          <li><a href="#usecases">场景</a></li>
+          <li><a href="#method">方法</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="foot-title">项目</div>
+        <ul class="foot-list">
+          <li><a href="https://github.com/zshleon/ai-info-website" target="_blank" rel="noopener">GitHub 仓库</a></li>
+          <li><a href="https://github.com/zshleon/ai-info-website/issues" target="_blank" rel="noopener">提交问题</a></li>
+          <li><a href="https://github.com/zshleon/ai-info-website/commits/main" target="_blank" rel="noopener">更新日志</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <div>© 2026 AI Pay Transparency · Built with ♥ in Shenzhen</div>
+      <div>Last updated · 2026-04-11</div>
+    </div>
+  </div>
 </footer>
 
 <script>
-// ===================== DATA =====================
+/* ──────────────────────────────────────────────
+   Data
+   ────────────────────────────────────────────── */
 const PRODUCTS = [
   {
-    id: 'chatgpt',
-    name: 'ChatGPT',
-    maker: 'OpenAI',
-    logo: '🟢',
-    logoBg: '#1a2a1a',
-    categories: ['Chat'],
-    desc: 'The world\'s most popular AI assistant. Great for writing, analysis, coding, and general Q&A. GPT-4o offers multimodal capabilities including vision and voice.',
-    strengths: ['Writing', 'Reasoning', 'Coding', 'Vision', 'Plugins/GPTs'],
-    hasFree: true,
-    pricing: [
-      { name: 'Free', price: '$0', note: 'GPT-4o limited' },
-      { name: 'Plus', price: '$20/mo', note: 'GPT-4o priority' },
-      { name: 'Team', price: '$30/mo', note: 'Per user' },
+    id:"claude",
+    name:"Claude",
+    logoClass:"logo-claude",
+    letter:"C",
+    provider:"Anthropic",
+    tagline:"长文推理与写作的黄金标准，200K 上下文，拒绝胡说八道的典范。",
+    price:"20",
+    priceNote:"$20 / month · Pro",
+    metrics:[
+      ["旗舰模型","Opus 4.6 / Sonnet 4.6"],
+      ["上下文","200,000 tokens"],
+      ["配额","~45 条 / 5h"],
+      ["API","$3 / $15 per 1M"],
     ],
-    ratings: { 'Reasoning': 9.0, 'Coding': 8.5, 'Creative Writing': 8.8, 'Speed': 8.0, 'Ease of Use': 9.5 },
-    limits: [
-      { label: 'Context', value: '128K tokens' },
-      { label: 'Free msgs', value: '~40/3hrs' },
-      { label: 'Voice', value: 'Yes (Advanced)' },
+    strengths:[
+      "推理与写作公认最稳健，语气自然不堆砌",
+      "200K 上下文，整篇论文 / 整个代码库无压力",
+      "Artifacts 可在会话里直接预览代码与文档"
     ],
-    usage: { dau: '100M+', launched: '2022' },
-    url: 'https://chat.openai.com',
-    updated: 'Apr 2025',
+    bestFor:"作家、研究者、严肃编程",
+    link:"https://claude.ai"
   },
   {
-    id: 'claude',
-    name: 'Claude',
-    maker: 'Anthropic',
-    logo: '🟠',
-    logoBg: '#2a1a0d',
-    categories: ['Chat'],
-    desc: 'Known for long-context understanding, nuanced writing, and strong safety. Claude 3.5 Sonnet is best for document analysis, detailed reasoning, and thoughtful responses.',
-    strengths: ['Long context', 'Writing', 'Document analysis', 'Safety', 'Nuance'],
-    hasFree: true,
-    pricing: [
-      { name: 'Free', price: '$0', note: 'Claude 3.5 Haiku' },
-      { name: 'Pro', price: '$20/mo', note: 'Priority access' },
-      { name: 'Team', price: '$30/mo', note: 'Per user' },
+    id:"chatgpt",
+    name:"ChatGPT",
+    logoClass:"logo-openai",
+    letter:"G",
+    provider:"OpenAI",
+    tagline:"生态最完整的全能助手，图像、语音、代码、插件样样齐备。",
+    price:"20",
+    priceNote:"$20 / month · Plus",
+    metrics:[
+      ["旗舰模型","GPT-5 / o4"],
+      ["上下文","128,000 tokens"],
+      ["配额","80 条 / 3h"],
+      ["API","$5 / $15 per 1M"],
     ],
-    ratings: { 'Reasoning': 9.2, 'Coding': 9.0, 'Creative Writing': 9.5, 'Speed': 8.0, 'Ease of Use': 8.8 },
-    limits: [
-      { label: 'Context', value: '200K tokens' },
-      { label: 'Free msgs', value: '~20-40/day' },
-      { label: 'Voice', value: 'No' },
+    strengths:[
+      "DALL·E、语音、Python 沙箱、GPT 市场一应俱全",
+      "生态最活跃，第三方 GPTs 接近无限",
+      "o4 在数学 / 逻辑推理上仍是业界标杆"
     ],
-    usage: { dau: '10M+', launched: '2023' },
-    url: 'https://claude.ai',
-    updated: 'Apr 2025',
+    bestFor:"全能型日常 AI 助手",
+    link:"https://chat.openai.com"
   },
   {
-    id: 'gemini',
-    name: 'Gemini',
-    maker: 'Google',
-    logo: '🔵',
-    logoBg: '#0d1a2a',
-    categories: ['Chat'],
-    desc: 'Google\'s flagship AI integrates deeply with Google Workspace, Search, and Drive. Gemini 1.5 Pro offers a massive 1M token context window.',
-    strengths: ['Google integration', 'Long context', 'Multimodal', 'Real-time info', 'Docs/Sheets'],
-    hasFree: true,
-    pricing: [
-      { name: 'Free', price: '$0', note: 'Gemini 1.5 Flash' },
-      { name: 'Advanced', price: '$19.99/mo', note: '1.5 Pro' },
-      { name: 'Business', price: '$30/mo', note: 'Workspace' },
+    id:"gemini",
+    name:"Gemini",
+    logoClass:"logo-gemini",
+    letter:"✦",
+    provider:"Google",
+    tagline:"1M 超长上下文 + Google 全家桶深度集成的最大赢家。",
+    price:"20",
+    priceNote:"$20 / month · Advanced",
+    metrics:[
+      ["旗舰模型","Gemini 2.5 Pro"],
+      ["上下文","1,000,000 tokens"],
+      ["配额","≈ 无硬限"],
+      ["API","$1.25 / $5 per 1M"],
     ],
-    ratings: { 'Reasoning': 8.8, 'Coding': 8.2, 'Creative Writing': 8.0, 'Speed': 9.0, 'Ease of Use': 9.0 },
-    limits: [
-      { label: 'Context', value: '1M tokens' },
-      { label: 'Free msgs', value: 'Generous' },
-      { label: 'Voice', value: 'Yes' },
+    strengths:[
+      "1M 超长窗口，可以一次塞入整本书",
+      "Drive / Gmail / Docs 原生集成，办公无缝",
+      "Imagen 4 图像质量在写实场景下领先"
     ],
-    usage: { dau: '20M+', launched: '2023' },
-    url: 'https://gemini.google.com',
-    updated: 'Apr 2025',
+    bestFor:"Google 生态重度用户",
+    link:"https://gemini.google.com"
   },
   {
-    id: 'copilot',
-    name: 'GitHub Copilot',
-    maker: 'GitHub / OpenAI',
-    logo: '⚫',
-    logoBg: '#111',
-    categories: ['Coding'],
-    desc: 'The leading AI pair programmer. Autocompletes code in your editor, chats about your codebase, and generates entire functions from comments.',
-    strengths: ['Code completion', 'IDE integration', 'Multi-language', 'PR reviews', 'CLI'],
-    hasFree: true,
-    pricing: [
-      { name: 'Free', price: '$0', note: '2K completions/mo' },
-      { name: 'Individual', price: '$10/mo', note: 'Unlimited' },
-      { name: 'Business', price: '$19/mo', note: 'Per user' },
+    id:"cursor",
+    name:"Cursor",
+    logoClass:"logo-cursor",
+    letter:"⌘",
+    provider:"Anysphere",
+    tagline:"给开发者用的 AI IDE，直接在编辑器里调用 Claude 与 GPT。",
+    price:"20",
+    priceNote:"$20 / month · Pro",
+    metrics:[
+      ["底层模型","Claude + GPT-5 + 自研"],
+      ["上下文","跟随底层模型"],
+      ["配额","500 快速 / 月"],
+      ["本地","终端 + 代码库索引"],
     ],
-    ratings: { 'Code Completion': 9.5, 'Accuracy': 8.8, 'IDE Integration': 9.5, 'Speed': 9.2, 'Language Support': 9.0 },
-    limits: [
-      { label: 'Context', value: 'File + repo' },
-      { label: 'Models', value: 'GPT-4o, Claude' },
-      { label: 'IDE', value: 'VS Code, JetBrains+' },
+    strengths:[
+      "一个订阅同时拿到 Claude 与 GPT 顶级模型",
+      "全代码库索引 + agent 自动多文件修改",
+      "本地终端调用，命令与代码在同一视窗"
     ],
-    usage: { dau: '1.8M+', launched: '2021' },
-    url: 'https://github.com/features/copilot',
-    updated: 'Apr 2025',
+    bestFor:"认真写代码的开发者",
+    link:"https://cursor.com"
   },
   {
-    id: 'cursor',
-    name: 'Cursor',
-    maker: 'Anysphere',
-    logo: '🖱️',
-    logoBg: '#0d1520',
-    categories: ['Coding'],
-    desc: 'An AI-native code editor built on VS Code. Ask questions about your entire codebase, generate code from a prompt, and apply multi-file edits with one click.',
-    strengths: ['Codebase chat', 'Multi-file edits', 'Tab completion', 'VS Code compatible', 'Agent mode'],
-    hasFree: true,
-    pricing: [
-      { name: 'Hobby', price: '$0', note: '2K completions' },
-      { name: 'Pro', price: '$20/mo', note: 'Unlimited' },
-      { name: 'Business', price: '$40/mo', note: 'Per user' },
+    id:"copilot",
+    name:"GitHub Copilot",
+    logoClass:"logo-copilot",
+    letter:"⚙",
+    provider:"GitHub",
+    tagline:"最便宜的 IDE 级 AI 助手，$10 拿到 GPT-5 与 Claude 双引擎。",
+    price:"10",
+    priceNote:"$10 / month · Pro",
+    metrics:[
+      ["底层模型","GPT-5 / Claude / Gemini"],
+      ["上下文","跟随底层模型"],
+      ["配额","≈ 无硬限 (IDE)"],
+      ["集成","VS Code / JetBrains / Neovim"],
     ],
-    ratings: { 'Code Completion': 9.2, 'Accuracy': 9.0, 'IDE Integration': 9.8, 'Speed': 8.8, 'Language Support': 9.0 },
-    limits: [
-      { label: 'Context', value: 'Full repo' },
-      { label: 'Models', value: 'GPT-4, Claude' },
-      { label: 'Platform', value: 'Desktop app' },
+    strengths:[
+      "价格只有其它订阅的一半，无硬性配额",
+      "Chat / Edit / Agent 模式全覆盖",
+      "与 GitHub PR / Actions 深度集成"
     ],
-    usage: { dau: '400K+', launched: '2023' },
-    url: 'https://cursor.com',
-    updated: 'Apr 2025',
-  },
-  {
-    id: 'perplexity',
-    name: 'Perplexity',
-    maker: 'Perplexity AI',
-    logo: '🔍',
-    logoBg: '#0d1a1a',
-    categories: ['Search', 'Chat'],
-    desc: 'AI-powered search engine that answers questions with cited sources in real time. Combines the best of search and AI for research, quick facts, and up-to-date info.',
-    strengths: ['Real-time search', 'Citations', 'Research', 'Focus modes', 'Up-to-date'],
-    hasFree: true,
-    pricing: [
-      { name: 'Free', price: '$0', note: 'Basic search' },
-      { name: 'Pro', price: '$20/mo', note: 'GPT-4 + Claude' },
-    ],
-    ratings: { 'Search Quality': 9.2, 'Citations': 9.5, 'Reasoning': 8.0, 'Speed': 9.0, 'Ease of Use': 9.2 },
-    limits: [
-      { label: 'Context', value: 'Web + upload' },
-      { label: 'Pro queries', value: '300/day' },
-      { label: 'Sources', value: 'Cited links' },
-    ],
-    usage: { dau: '15M+', launched: '2022' },
-    url: 'https://perplexity.ai',
-    updated: 'Apr 2025',
-  },
-  {
-    id: 'midjourney',
-    name: 'Midjourney',
-    maker: 'Midjourney Inc.',
-    logo: '🎨',
-    logoBg: '#1a0d2a',
-    categories: ['Image'],
-    desc: 'The gold standard for AI art generation. Produces stunning, high-quality images from text prompts with a distinctive aesthetic. Used by artists, designers, and marketers worldwide.',
-    strengths: ['Image quality', 'Artistic style', 'Consistency', 'Community', 'v6 photorealism'],
-    hasFree: false,
-    pricing: [
-      { name: 'Basic', price: '$10/mo', note: '200 images' },
-      { name: 'Standard', price: '$30/mo', note: '15hr/mo fast' },
-      { name: 'Pro', price: '$60/mo', note: 'Unlimited relax' },
-    ],
-    ratings: { 'Image Quality': 9.8, 'Style Control': 9.0, 'Photorealism': 9.2, 'Speed': 7.5, 'Ease of Use': 7.0 },
-    limits: [
-      { label: 'Res', value: 'Up to 4K' },
-      { label: 'Platform', value: 'Discord + Web' },
-      { label: 'Upscale', value: 'Yes' },
-    ],
-    usage: { dau: '16M+', launched: '2022' },
-    url: 'https://midjourney.com',
-    updated: 'Apr 2025',
-  },
-  {
-    id: 'dalle3',
-    name: 'DALL-E 3',
-    maker: 'OpenAI',
-    logo: '🖼️',
-    logoBg: '#1a1a0d',
-    categories: ['Image'],
-    desc: 'OpenAI\'s image model, built into ChatGPT. Excels at following complex prompts precisely and generating illustrations, concept art, and photorealistic scenes.',
-    strengths: ['Prompt adherence', 'Text in images', 'Variety', 'ChatGPT integration', 'Safety'],
-    hasFree: false,
-    pricing: [
-      { name: 'Via ChatGPT+', price: '$20/mo', note: 'Included in Plus' },
-      { name: 'API', price: '$0.04/img', note: '1024×1024' },
-    ],
-    ratings: { 'Image Quality': 8.8, 'Style Control': 8.5, 'Photorealism': 8.5, 'Speed': 8.8, 'Ease of Use': 9.2 },
-    limits: [
-      { label: 'Res', value: 'Up to 1792×1024' },
-      { label: 'Platform', value: 'ChatGPT, API' },
-      { label: 'Revise', value: 'Yes (chat)' },
-    ],
-    usage: { dau: 'Via ChatGPT', launched: '2023' },
-    url: 'https://openai.com/dall-e-3',
-    updated: 'Apr 2025',
-  },
-  {
-    id: 'runway',
-    name: 'Runway Gen-3',
-    maker: 'Runway AI',
-    logo: '🎬',
-    logoBg: '#1a0d0d',
-    categories: ['Video'],
-    desc: 'Leading text-to-video and image-to-video AI. Used by Hollywood studios and indie creators alike. Gen-3 Alpha produces cinematic, high-fidelity video clips.',
-    strengths: ['Video quality', 'Image-to-video', 'Camera control', 'Cinematic', 'Motion brush'],
-    hasFree: true,
-    pricing: [
-      { name: 'Free', price: '$0', note: '125 credits' },
-      { name: 'Standard', price: '$15/mo', note: '625 credits' },
-      { name: 'Pro', price: '$35/mo', note: '2250 credits' },
-    ],
-    ratings: { 'Video Quality': 9.0, 'Prompt Control': 8.5, 'Consistency': 8.0, 'Speed': 7.5, 'Ease of Use': 8.5 },
-    limits: [
-      { label: 'Duration', value: '10 sec' },
-      { label: 'Res', value: '1280×768' },
-      { label: 'Motion', value: 'High' },
-    ],
-    usage: { dau: '5M+', launched: '2024' },
-    url: 'https://runwayml.com',
-    updated: 'Apr 2025',
-  },
-  {
-    id: 'grok',
-    name: 'Grok',
-    maker: 'xAI / Elon Musk',
-    logo: '𝕏',
-    logoBg: '#0d0d0d',
-    categories: ['Chat', 'Search'],
-    desc: 'xAI\'s AI assistant integrated with X (Twitter). Has real-time access to X posts and can be more direct and unfiltered than other assistants. Grok 3 features improved reasoning.',
-    strengths: ['X/Twitter data', 'Real-time news', 'Unfiltered', 'Humor', 'Reasoning (Grok 3)'],
-    hasFree: true,
-    pricing: [
-      { name: 'Free (X Basic)', price: '$3/mo', note: 'Limited Grok' },
-      { name: 'X Premium+', price: '$16/mo', note: 'Full Grok access' },
-    ],
-    ratings: { 'Reasoning': 8.5, 'Coding': 7.8, 'Creative Writing': 8.0, 'Speed': 8.5, 'Ease of Use': 8.0 },
-    limits: [
-      { label: 'Context', value: '128K tokens' },
-      { label: 'Real-time', value: 'X feed' },
-      { label: 'Vision', value: 'Yes' },
-    ],
-    usage: { dau: '8M+', launched: '2023' },
-    url: 'https://x.com/i/grok',
-    updated: 'Apr 2025',
-  },
-  {
-    id: 'elevenlabs',
-    name: 'ElevenLabs',
-    maker: 'ElevenLabs Inc.',
-    logo: '🎙️',
-    logoBg: '#0d1a0d',
-    categories: ['Audio'],
-    desc: 'The most realistic AI voice synthesis platform. Clone any voice, generate speech in 29+ languages, and create full audiobooks or podcasts with lifelike AI voices.',
-    strengths: ['Voice quality', 'Voice cloning', 'Multi-language', 'Audiobook gen', 'Emotion control'],
-    hasFree: true,
-    pricing: [
-      { name: 'Free', price: '$0', note: '10K chars/mo' },
-      { name: 'Starter', price: '$5/mo', note: '30K chars' },
-      { name: 'Creator', price: '$22/mo', note: '100K chars' },
-    ],
-    ratings: { 'Voice Quality': 9.8, 'Voice Cloning': 9.5, 'Languages': 9.0, 'Speed': 9.0, 'Ease of Use': 9.2 },
-    limits: [
-      { label: 'Languages', value: '29+' },
-      { label: 'Voice clone', value: '1 min audio' },
-      { label: 'API', value: 'Yes' },
-    ],
-    usage: { dau: '1M+', launched: '2022' },
-    url: 'https://elevenlabs.io',
-    updated: 'Apr 2025',
-  },
-  {
-    id: 'mistral',
-    name: 'Mistral',
-    maker: 'Mistral AI',
-    logo: '🌊',
-    logoBg: '#0d1520',
-    categories: ['Chat', 'Coding'],
-    desc: 'European open-source AI company building efficient, powerful models. Mistral Large and Mixtral offer excellent performance at lower cost, great for developers and enterprises.',
-    strengths: ['Open source', 'Efficient', 'European data', 'API pricing', 'Self-hostable'],
-    hasFree: true,
-    pricing: [
-      { name: 'Free (Le Chat)', price: '$0', note: 'Mistral models' },
-      { name: 'API', price: '$2/1M tkns', note: 'Mistral Large' },
-    ],
-    ratings: { 'Reasoning': 8.5, 'Coding': 8.5, 'Creative Writing': 8.0, 'Speed': 9.2, 'Ease of Use': 8.5 },
-    limits: [
-      { label: 'Context', value: '32K tokens' },
-      { label: 'Open source', value: 'Yes' },
-      { label: 'Self-host', value: 'Yes' },
-    ],
-    usage: { dau: '3M+', launched: '2023' },
-    url: 'https://mistral.ai',
-    updated: 'Apr 2025',
-  },
+    bestFor:"预算敏感的开发者",
+    link:"https://github.com/features/copilot"
+  }
 ];
 
-// ===================== STATE =====================
-let activeFilter = 'all';
-let activeSort = 'name';
-let searchQuery = '';
-let compareSet = new Set();
-let commentsStore = {}; // { productId: [{author,factor,text,date,up,down}] }
-
-// Load comments from localStorage
-function loadComments() {
-  try {
-    const saved = localStorage.getItem('ai_dir_comments');
-    if (saved) commentsStore = JSON.parse(saved);
-  } catch(e) {}
-  updateCommentStat();
-}
-function saveComments() {
-  try { localStorage.setItem('ai_dir_comments', JSON.stringify(commentsStore)); } catch(e) {}
-  updateCommentStat();
-}
-function updateCommentStat() {
-  let total = 0;
-  Object.values(commentsStore).forEach(arr => total += arr.length);
-  document.getElementById('stat-comments').textContent = total;
-}
-
-// ===================== RATING BAR COLOR =====================
-function barClass(val) {
-  if (val >= 9) return 'bar-excellent';
-  if (val >= 7.5) return 'bar-good';
-  if (val >= 6) return 'bar-fair';
-  return 'bar-poor';
-}
-
-// ===================== RENDER CARD =====================
-function renderCard(p) {
-  const comments = commentsStore[p.id] || [];
-  const selected = compareSet.has(p.id);
-  const factorKeys = Object.keys(p.ratings);
-
-  const ratingsHTML = factorKeys.map(k => {
-    const val = p.ratings[k];
-    const pct = (val / 10) * 100;
-    return `
-      <div class="rating-row">
-        <span class="rating-name">${k}</span>
-        <div class="rating-bar-wrap"><div class="rating-bar ${barClass(val)}" style="width:${pct}%"></div></div>
-        <span class="rating-val">${val}</span>
-      </div>`;
-  }).join('');
-
-  const pricingHTML = p.pricing.map(t => `
-    <div class="pricing-tier">
-      <div class="tier-name">${t.name}</div>
-      <div class="tier-price ${t.price === '$0' ? 'free-price' : 'paid-price'}">${t.price}</div>
-      <div class="tier-note">${t.note}</div>
-    </div>`).join('');
-
-  const limitsHTML = p.limits.map(l => `<span class="limit-item"><strong>${l.label}:</strong> ${l.value}</span>`).join('');
-
-  const commentsHTML = comments.map((c, ci) => `
-    <div class="comment-item">
-      <div class="comment-meta">
-        <span class="comment-author">${escHtml(c.author || 'Anonymous')}</span>
-        <span class="comment-date">${c.date}</span>
-      </div>
-      <div class="comment-factor">${escHtml(c.factor)}</div>
-      <div class="comment-text">${escHtml(c.text)}</div>
-      <div class="comment-actions">
-        <button class="comment-vote" onclick="voteComment('${p.id}',${ci},1)">👍 ${c.up||0}</button>
-        <button class="comment-vote" onclick="voteComment('${p.id}',${ci},-1)">👎 ${c.down||0}</button>
-      </div>
-    </div>`).join('');
-
-  const factorOptions = factorKeys.map(k => `<option value="${k}">${k}</option>`).join('');
-  const badgeType = p.categories[0] === 'Coding' ? 'badge-blue' :
-                    p.categories[0] === 'Image' ? 'badge-purple' :
-                    p.categories[0] === 'Video' ? 'badge-yellow' :
-                    p.categories[0] === 'Audio' ? 'badge-green' :
-                    p.categories[0] === 'Search' ? 'badge-blue' : 'badge-purple';
-
-  return `
-  <div class="card${selected ? ' selected' : ''}" id="card-${p.id}">
-    <div class="card-compare-check ${selected ? 'checked' : ''}" onclick="toggleCompare('${p.id}')" title="Add to compare">
-      ${selected ? '✓' : ''}
-    </div>
-    <div class="card-header">
-      <div class="card-logo" style="background:${p.logoBg}">${p.logo}</div>
-      <div class="card-title-wrap">
-        <div class="card-title">${p.name}</div>
-        <div class="card-maker">${p.maker}</div>
-        <div class="card-badges">
-          ${p.categories.map(c => `<span class="badge ${badgeType}">${c}</span>`).join('')}
-          ${p.hasFree ? '<span class="badge badge-free">Free Tier</span>' : ''}
-        </div>
+/* ──────────────────────────────────────────────
+   Render cards
+   ────────────────────────────────────────────── */
+const grid = document.getElementById("productGrid");
+PRODUCTS.forEach((p,i)=>{
+  const card = document.createElement("article");
+  card.className = "card reveal";
+  card.style.transitionDelay = (i*60)+"ms";
+  card.innerHTML = `
+    <div class="card-head">
+      <div class="logo ${p.logoClass}">${p.letter}</div>
+      <div>
+        <div class="card-name">${p.name}</div>
+        <div class="card-provider">${p.provider}</div>
       </div>
     </div>
-
-    <p class="card-desc">${p.desc}</p>
-
-    <div class="card-strengths">
-      <div class="strength-label">Best At</div>
-      <div class="strength-tags">${p.strengths.map(s => `<span class="strength-tag">${s}</span>`).join('')}</div>
+    <p class="card-tagline">${p.tagline}</p>
+    <div class="price-row">
+      <span class="price-amt">$${p.price}</span>
+      <span class="price-unit">/ month</span>
     </div>
-
-    <div class="card-ratings">${ratingsHTML}</div>
-
-    <div class="card-pricing">
-      <div class="pricing-title">Pricing</div>
-      <div class="pricing-tiers">${pricingHTML}</div>
+    <div class="price-note">${p.priceNote}</div>
+    <div class="metric-list">
+      ${p.metrics.map(m=>`
+        <div class="metric">
+          <span class="metric-k">${m[0]}</span>
+          <span class="metric-v">${m[1]}</span>
+        </div>`).join("")}
     </div>
-
-    <div class="card-usage">
-      <div class="usage-stat"><div class="usage-val">${p.usage.dau}</div><div class="usage-name">Daily Users</div></div>
-      <div class="usage-stat"><div class="usage-val">${p.usage.launched}</div><div class="usage-name">Launched</div></div>
+    <div class="strengths">
+      ${p.strengths.map(s=>`<div class="strength">${s}</div>`).join("")}
     </div>
-
-    <div class="card-limits">${limitsHTML}</div>
-
-    <div class="card-comments">
-      <div class="comments-header">
-        <span class="comments-title">💬 Comments (${comments.length})</span>
-        <button class="btn-add-comment" onclick="toggleCommentForm('${p.id}')">+ Add Comment</button>
-      </div>
-      <div class="comment-form" id="form-${p.id}">
-        <input type="text" placeholder="Your name (optional)" id="cname-${p.id}" maxlength="40" />
-        <select id="cfactor-${p.id}">${factorOptions}</select>
-        <textarea placeholder="Share your experience with ${p.name}…" id="ctext-${p.id}" maxlength="400"></textarea>
-        <div class="comment-form-btns">
-          <button class="btn-cancel" onclick="toggleCommentForm('${p.id}')">Cancel</button>
-          <button class="btn-submit" onclick="submitComment('${p.id}')">Post Comment</button>
-        </div>
-      </div>
-      <div class="comment-list" id="comments-${p.id}">${commentsHTML}</div>
+    <div class="card-cta">
+      <div class="best-for">Best for<span>${p.bestFor}</span></div>
+      <a class="ext-link" href="${p.link}" target="_blank" rel="noopener">
+        访问 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+      </a>
     </div>
-
-    <div class="card-footer">
-      <span class="card-updated">Updated ${p.updated}</span>
-      <a class="card-link" href="${p.url}" target="_blank" rel="noopener">Visit →</a>
+    <div class="comments">
+      <div class="comments-title">Community Notes · 读者评论</div>
+      <div class="comment-list" data-list="${p.id}"></div>
+      <form class="comment-form" data-id="${p.id}">
+        <input type="text" placeholder="分享你的使用体验…" maxlength="180" required />
+        <button type="submit">发送</button>
+      </form>
     </div>
-  </div>`;
+  `;
+  grid.appendChild(card);
+});
+
+/* ──────────────────────────────────────────────
+   Comment persistence
+   ────────────────────────────────────────────── */
+const MEM = {};
+function loadComments(id){ return MEM[id] || []; }
+function saveComment(id, txt){
+  MEM[id] = MEM[id] || [];
+  MEM[id].push({who:"匿名用户",txt,time:Date.now()});
+  renderComments(id);
 }
-
-// ===================== FILTER & RENDER =====================
-function getFiltered() {
-  let list = [...PRODUCTS];
-  if (activeFilter !== 'all') list = list.filter(p => p.categories.includes(activeFilter));
-  if (searchQuery) {
-    const q = searchQuery.toLowerCase();
-    list = list.filter(p =>
-      p.name.toLowerCase().includes(q) ||
-      p.maker.toLowerCase().includes(q) ||
-      p.desc.toLowerCase().includes(q) ||
-      p.strengths.some(s => s.toLowerCase().includes(q))
-    );
+function renderComments(id){
+  const box = document.querySelector('[data-list="'+id+'"]');
+  if(!box) return;
+  const list = loadComments(id);
+  if(list.length===0){
+    box.innerHTML = '<div class="comment-empty">还没有评论，来当第一个吧。</div>';
+  }else{
+    box.innerHTML = list.slice(-5).reverse().map(c=>
+      `<div class="comment-item"><span class="who">${c.who}</span>${escapeHTML(c.txt)}</div>`
+    ).join("");
   }
-  if (activeSort === 'name') list.sort((a,b) => a.name.localeCompare(b.name));
-  else if (activeSort === 'rating') {
-    list.sort((a,b) => {
-      const avg = p => Object.values(p.ratings).reduce((s,v)=>s+v,0) / Object.values(p.ratings).length;
-      return avg(b) - avg(a);
-    });
-  } else if (activeSort === 'price') {
-    list.sort((a,b) => (b.hasFree?1:0) - (a.hasFree?1:0));
-  }
-  return list;
 }
+function escapeHTML(s){
+  return s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+PRODUCTS.forEach(p=>renderComments(p.id));
 
-function renderGrid() {
-  const list = getFiltered();
-  const grid = document.getElementById('productGrid');
-  document.getElementById('resultsCount').textContent = list.length;
-  if (!list.length) {
-    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1">
-      <div class="icon">🔍</div><h3>No products found</h3>
-      <p>Try a different search or filter.</p></div>`;
-    return;
+document.addEventListener("submit",e=>{
+  if(e.target.matches(".comment-form")){
+    e.preventDefault();
+    const id = e.target.dataset.id;
+    const input = e.target.querySelector("input");
+    const val = input.value.trim();
+    if(val){ saveComment(id,val); input.value=""; }
   }
-  grid.innerHTML = list.map(renderCard).join('');
-}
+});
 
-// ===================== COMPARE =====================
-function toggleCompare(id) {
-  if (compareSet.has(id)) {
-    compareSet.delete(id);
-  } else {
-    if (compareSet.size >= 4) { alert('You can compare up to 4 products at a time.'); return; }
-    compareSet.add(id);
-  }
-  updateCompareBadge();
-  renderGrid();
-}
-function updateCompareBadge() {
-  const badge = document.getElementById('compareBadge');
-  badge.style.display = compareSet.size ? 'inline-flex' : 'none';
-  badge.textContent = compareSet.size;
-}
-function openCompare() {
-  if (!compareSet.size) { alert('Select products to compare using the ○ button on each card.'); return; }
-  const selected = PRODUCTS.filter(p => compareSet.has(p.id));
-  const allKeys = [...new Set(selected.flatMap(p => Object.keys(p.ratings)))];
-  let rows = '';
-  const makeCell = (p, key) => {
-    const v = p.ratings[key];
-    return v !== undefined ? `<td><span style="color:${v>=9?'#34d399':v>=7.5?'#38bdf8':v>=6?'#fbbf24':'#f87171'}">${v}</span></td>` : '<td style="color:#64748b">—</td>';
-  };
-  const headers = selected.map(p => `<th>${p.logo} ${p.name}</th>`).join('');
-  rows += `<tr><td>Maker</td>${selected.map(p=>`<td>${p.maker}</td>`).join('')}</tr>`;
-  rows += `<tr><td>Category</td>${selected.map(p=>`<td>${p.categories.join(', ')}</td>`).join('')}</tr>`;
-  rows += `<tr><td>Free Tier</td>${selected.map(p=>`<td>${p.hasFree ? '<span style="color:#34d399">✓ Yes</span>' : '<span style="color:#f87171">✗ No</span>'}</td>`).join('')}</tr>`;
-  rows += `<tr><td>Starting Price</td>${selected.map(p=>`<td>${p.pricing[0].price}</td>`).join('')}</tr>`;
-  rows += `<tr><td>Context</td>${selected.map(p=>`<td>${p.limits.find(l=>l.label==='Context')?.value || '—'}</td>`).join('')}</tr>`;
-  rows += `<tr><td>Daily Users</td>${selected.map(p=>`<td>${p.usage.dau}</td>`).join('')}</tr>`;
-  allKeys.forEach(k => {
-    rows += `<tr><td>${k}</td>${selected.map(p=>makeCell(p,k)).join('')}</tr>`;
+/* ──────────────────────────────────────────────
+   Reveal on scroll
+   ────────────────────────────────────────────── */
+const io = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.classList.add("in");
+      io.unobserve(e.target);
+    }
   });
-
-  document.getElementById('compareTableWrap').innerHTML = `
-    <table>
-      <thead><tr><th>Feature</th>${headers}</tr></thead>
-      <tbody>${rows}</tbody>
-    </table>`;
-  document.getElementById('compareModal').classList.add('open');
-}
-function closeCompare() {
-  document.getElementById('compareModal').classList.remove('open');
-}
-
-// ===================== COMMENTS =====================
-function toggleCommentForm(id) {
-  const form = document.getElementById('form-'+id);
-  form.classList.toggle('open');
-}
-function submitComment(id) {
-  const author = document.getElementById('cname-'+id).value.trim() || 'Anonymous';
-  const factor = document.getElementById('cfactor-'+id).value;
-  const text = document.getElementById('ctext-'+id).value.trim();
-  if (!text) { alert('Please write a comment first.'); return; }
-  if (!commentsStore[id]) commentsStore[id] = [];
-  commentsStore[id].unshift({
-    author, factor, text,
-    date: new Date().toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'}),
-    up: 0, down: 0
-  });
-  saveComments();
-  document.getElementById('ctext-'+id).value = '';
-  document.getElementById('cname-'+id).value = '';
-  renderGrid();
-}
-function voteComment(id, ci, dir) {
-  if (!commentsStore[id]?.[ci]) return;
-  if (dir === 1) commentsStore[id][ci].up = (commentsStore[id][ci].up||0)+1;
-  else commentsStore[id][ci].down = (commentsStore[id][ci].down||0)+1;
-  saveComments();
-  renderGrid();
-}
-
-// ===================== UTILS =====================
-function escHtml(str) {
-  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-// ===================== EVENTS =====================
-document.getElementById('searchInput').addEventListener('input', e => {
-  searchQuery = e.target.value;
-  renderGrid();
-});
-document.getElementById('filterChips').addEventListener('click', e => {
-  const chip = e.target.closest('.chip');
-  if (!chip) return;
-  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-  chip.classList.add('active');
-  activeFilter = chip.dataset.filter;
-  renderGrid();
-});
-document.getElementById('sortSelect').addEventListener('change', e => {
-  activeSort = e.target.value;
-  renderGrid();
-});
-document.getElementById('compareModal').addEventListener('click', e => {
-  if (e.target === e.currentTarget) closeCompare();
-});
-
-// ===================== INIT =====================
-loadComments();
-renderGrid();
+},{threshold:.12,rootMargin:"0px 0px -40px 0px"});
+document.querySelectorAll(".reveal").forEach(el=>io.observe(el));
 </script>
 </body>
 </html>
