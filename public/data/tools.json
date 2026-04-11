@@ -1,0 +1,254 @@
+{
+  "meta": {
+    "last_updated": "2026-04-11",
+    "version": "1.2.0",
+    "notes": "Data verified against official docs and community reports as of April 2026"
+  },
+  "tools": [
+    {
+      "id": "claude-pro",
+      "name": "Claude Pro",
+      "vendor": "Anthropic",
+      "slug": "claude-pro",
+      "price_usd": 20,
+      "pool_type": "shared",
+      "logo_color": "#c4936b",
+      "logo_letter": "C",
+      "tiers": {
+        "chat": {
+          "limit": "~45条 / 5小时",
+          "detail": "短消息估算，Opus 模型消耗更快，长对话可能仅10-20条",
+          "reset": "5小时滚动重置",
+          "model": "Claude Sonnet 4.6 / Opus 4.6",
+          "pool": "shared",
+          "notes": "聊天与 CLI、Claude Code 共用同一token池"
+        },
+        "coding": {
+          "limit": "~44K tokens / 5h",
+          "detail": "Claude Code IDE 插件消耗来自同一配额池",
+          "reset": "5小时滚动重置",
+          "model": "Claude Sonnet 4.6",
+          "pool": "shared",
+          "notes": "使用 Claude Code 编程会减少聊天可用配额"
+        },
+        "cli": {
+          "limit": "~44K tokens / 5h",
+          "detail": "Claude Code CLI 包含在订阅内，共用池",
+          "reset": "5小时滚动重置",
+          "model": "Claude Sonnet 4.6",
+          "pool": "shared",
+          "notes": "2026年4月起，第三方工具（OpenClaw、APEX等）已被封禁使用订阅token，必须切换API KEY独立计费"
+        },
+        "api": {
+          "limit": "完全独立",
+          "detail": "API 调用完全独立于订阅，按 token 单独计费",
+          "reset": "无限制",
+          "model": "全部模型",
+          "pool": "standalone",
+          "notes": "API 与订阅完全隔离，不影响也不受影响"
+        }
+      },
+      "changelog": [
+        { "date": "2026-04", "event": "封禁第三方工具（OpenClaw等）使用订阅token，强制使用API KEY" },
+        { "date": "2026-01", "event": "Opus 4.6 加入 Pro 订阅，但配额消耗更高" },
+        { "date": "2025-10", "event": "5小时滚动重置机制取代每日重置" }
+      ]
+    },
+    {
+      "id": "chatgpt-plus",
+      "name": "ChatGPT Plus",
+      "vendor": "OpenAI",
+      "slug": "chatgpt-plus",
+      "price_usd": 20,
+      "pool_type": "shared",
+      "logo_color": "#2ab684",
+      "logo_letter": "G",
+      "tiers": {
+        "chat": {
+          "limit": "动态浮动",
+          "detail": "GPT-5 / o3 配额动态调整，超限后自动降级至 GPT-5_mini",
+          "reset": "约5小时周期",
+          "model": "GPT-5 / o3 / GPT-5_mini",
+          "pool": "shared",
+          "notes": "实际限额未公开，OpenAI以\"fair use\"描述，高峰期降级更频繁"
+        },
+        "coding": {
+          "limit": "30-150条 / 5小时",
+          "detail": "Codex CLI 与 Codex Web 共用配额池，本地任务也消耗订阅额度",
+          "reset": "约5小时周期",
+          "model": "GPT-5.3-Codex",
+          "pool": "shared",
+          "notes": "GPT-5.3-Codex 动态配额规则：任务复杂度影响消耗速度，简单任务可达150条"
+        },
+        "cli": {
+          "limit": "30-150条 / 5小时",
+          "detail": "Codex CLI 包含在订阅内，与 Web 共用额度",
+          "reset": "约5小时周期",
+          "model": "GPT-5.3-Codex",
+          "pool": "shared",
+          "notes": "可选：切换后按 token 独立计费，不扣订阅配额。切换方式：openai codex --api-key YOUR_KEY"
+        },
+        "api": {
+          "limit": "完全独立",
+          "detail": "API 调用完全独立于 Plus 订阅，按 token 单独计费",
+          "reset": "无限制",
+          "model": "全部模型含 o3",
+          "pool": "standalone",
+          "notes": "API 与 Plus 订阅完全隔离"
+        }
+      },
+      "changelog": [
+        { "date": "2026-03", "event": "GPT-5 正式加入 Plus 订阅，Codex CLI 同步上线" },
+        { "date": "2026-01", "event": "o3 模型加入 Plus，配额动态化" },
+        { "date": "2025-11", "event": "Codex Web 进入 Plus 套餐，与 Chat 共用配额" }
+      ]
+    },
+    {
+      "id": "google-ai-pro",
+      "name": "Google AI Pro",
+      "vendor": "Google",
+      "slug": "google-ai-pro",
+      "price_usd": 19.99,
+      "pool_type": "independent",
+      "logo_color": "#4c8bf5",
+      "logo_letter": "G",
+      "tiers": {
+        "chat": {
+          "limit": "~500条 / 天",
+          "detail": "Gemini App 对话，每日凌晨重置，不影响 CLI 或编程额度",
+          "reset": "每天凌晨（UTC）",
+          "model": "Gemini 3.1 Pro / Flash",
+          "pool": "independent",
+          "notes": "聊天配额与 Code Assist、CLI 完全独立计算"
+        },
+        "coding": {
+          "limit": "[未公开]",
+          "detail": "Jules（AI 代码执行智能体）独立计费，与聊天分开统计",
+          "reset": "每天重置",
+          "model": "Gemini 3.1 Pro",
+          "pool": "independent",
+          "notes": "Jules 编程工具的配额独立于 Gemini 聊天，这是 Google 区别于 Claude/ChatGPT 的核心优势"
+        },
+        "cli": {
+          "limit": "~1000次 / 天",
+          "detail": "Gemini CLI / Code Assist 请求，独立计算不影响聊天",
+          "reset": "每天重置",
+          "model": "Gemini 3.1 Pro / Flash",
+          "pool": "independent",
+          "notes": "免费版也给 1000次/天 CLI（Flash 模型），Pro 档更高"
+        },
+        "api": {
+          "limit": "完全独立",
+          "detail": "Google AI Studio / Vertex AI API 完全独立计费",
+          "reset": "无限制",
+          "model": "全部 Gemini 系列",
+          "pool": "standalone",
+          "notes": "API 与 AI Pro 订阅完全隔离"
+        }
+      },
+      "changelog": [
+        { "date": "2026-03", "event": "Gemini CLI 新增免费 1000次/天，Pro 档提升至约1000次" },
+        { "date": "2026-02", "event": "Jules 编程智能体进入 AI Pro 订阅" },
+        { "date": "2025-12", "event": "AI Pro 套餐更名（原 Google One AI Premium）" }
+      ]
+    },
+    {
+      "id": "cursor-pro",
+      "name": "Cursor Pro",
+      "vendor": "Anysphere",
+      "slug": "cursor-pro",
+      "price_usd": 20,
+      "pool_type": "independent",
+      "logo_color": "#7c3aed",
+      "logo_letter": "Cu",
+      "tiers": {
+        "chat": {
+          "limit": "500次高级请求 / 月",
+          "detail": "高级模型（Claude Opus、GPT-4o等）每月500次，慢速请求不限量",
+          "reset": "每月计费日重置",
+          "model": "Claude 4.6 / GPT-4o / Gemini Pro",
+          "pool": "independent",
+          "notes": "聊天与编程共用同一个\"高级请求\"池，但500次月额度远高于Claude/ChatGPT的5小时限制"
+        },
+        "coding": {
+          "limit": "500次高级请求 / 月",
+          "detail": "代码补全、Tab补全使用高级请求额度，慢速补全不限量",
+          "reset": "每月计费日重置",
+          "model": "Claude Sonnet 4.6 / GPT-4o",
+          "pool": "independent",
+          "notes": "Cursor 的核心优势：月度Pool远大于Claude/ChatGPT的短周期池，不会频繁遇到限速"
+        },
+        "cli": {
+          "limit": "不适用",
+          "detail": "Cursor 是 IDE，无独立 CLI 工具",
+          "reset": "-",
+          "model": "-",
+          "pool": "standalone",
+          "notes": "可在 Cursor 内调用终端，但本身不是 CLI 工具"
+        },
+        "api": {
+          "limit": "可配置",
+          "detail": "支持配置自己的 API Key（Claude/OpenAI），使用自带 key 不消耗 Cursor 额度",
+          "reset": "取决于各API提供商",
+          "model": "取决于 API Key",
+          "pool": "standalone",
+          "notes": "BYO Key 模式：零额外费用，完全自控"
+        }
+      },
+      "changelog": [
+        { "date": "2026-03", "event": "支持 Claude Opus 4.6 作为高级模型选项" },
+        { "date": "2026-01", "event": "BYO Key 模式正式稳定，支持全部主流 API" },
+        { "date": "2025-09", "event": "月度额度从 350次 提升至 500次" }
+      ]
+    },
+    {
+      "id": "github-copilot",
+      "name": "GitHub Copilot",
+      "vendor": "Microsoft / GitHub",
+      "slug": "github-copilot",
+      "price_usd": 10,
+      "pool_type": "independent",
+      "logo_color": "#1f2937",
+      "logo_letter": "Co",
+      "tiers": {
+        "chat": {
+          "limit": "无明确限制",
+          "detail": "Copilot Chat（IDE + Web）无明确消息上限，受\"fair use\"约束",
+          "reset": "无固定周期",
+          "model": "GPT-4o / Claude Sonnet 4.6",
+          "pool": "independent",
+          "notes": "Individual 版按 fair use 原则，正常使用基本不会被限制"
+        },
+        "coding": {
+          "limit": "无明确限制",
+          "detail": "代码补全无次数限制，按 fair use 策略管理",
+          "reset": "无固定周期",
+          "model": "Codex / GPT-4o",
+          "pool": "independent",
+          "notes": "代码补全与 Chat 独立计算，核心补全功能极少遇到限速"
+        },
+        "cli": {
+          "limit": "无明确限制",
+          "detail": "Copilot CLI（gh copilot）包含在订阅内，用于命令生成和解释",
+          "reset": "无固定周期",
+          "model": "GPT-4o",
+          "pool": "independent",
+          "notes": "Copilot CLI 专注于 shell 命令建议，与代码补全独立"
+        },
+        "api": {
+          "limit": "不适用",
+          "detail": "Copilot Individual 不提供直接 API 访问",
+          "reset": "-",
+          "model": "-",
+          "pool": "standalone",
+          "notes": "Enterprise / Business 版本提供 API，Individual 版不包含"
+        }
+      },
+      "changelog": [
+        { "date": "2026-03", "event": "Claude Sonnet 4.6 加入 Copilot Chat 模型选项" },
+        { "date": "2026-01", "event": "Copilot 免费版上线（每月2000次补全 + 50次Chat）" },
+        { "date": "2025-10", "event": "多模型切换功能正式上线（GPT-4o / Claude）" }
+      ]
+    }
+  ]
+}
