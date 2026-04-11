@@ -1,0 +1,36 @@
+name: AI Data Auto-Sync
+
+on:
+  schedule:
+    - cron: '0 0,12 * * *' # Twice daily
+  workflow_dispatch:      # Manual trigger
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Install Playwright Browsers
+        run: npx playwright install chromium --with-deps
+
+      - name: Run Scraper
+        run: node scripts/sync-data.js
+
+      - name: Commit and Push Changes
+        run: |
+          git config --global user.name "AI Data Bot"
+          git config --global user.email "bot@ai-transparency.com"
+          git add data/products.json
+          git diff-index --quiet HEAD || git commit -m "data: automated update of AI tool specs [skip ci]"
+          git push

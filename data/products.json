@@ -1,0 +1,123 @@
+{
+  "meta": {
+    "last_updated": "2026-04-11",
+    "version": "1.3.0"
+  },
+  "products": [
+    {
+      "id": "claude",
+      "name": "Claude",
+      "logoClass": "logo-claude",
+      "letter": "C",
+      "provider": "Anthropic",
+      "tagline": "长文推理与写作的黄金标准，200K 上下文，拒绝胡说八道的典范。",
+      "price": "20",
+      "priceNote": "$20 / month · Pro",
+      "metrics": [
+        ["旗舰模型", "Claude Mythos / Opus"],
+        ["上下文", "200,000 tokens"],
+        ["配额", "~45 条 / 5h"],
+        ["API", "$3 / $15 per 1M"]
+      ],
+      "strengths": [
+        "推理与写作公认最稳健，语气自然不堆砌",
+        "200K 上下文，整篇论文 / 整个代码库无压力",
+        "Artifacts 可在会话里直接预览代码与文档"
+      ],
+      "bestFor": "作家、研究者、严肃编程",
+      "link": "https://claude.ai"
+    },
+    {
+      "id": "chatgpt",
+      "name": "ChatGPT",
+      "logoClass": "logo-openai",
+      "letter": "G",
+      "provider": "OpenAI",
+      "tagline": "生态最完整的全能助手，图像、语音、代码、插件样样齐备。",
+      "price": "20",
+      "priceNote": "$20 / month · Plus",
+      "metrics": [
+        ["旗舰模型", "GPT-5.3 / o4"],
+        ["上下文", "128,000 tokens"],
+        ["配额", "80 条 / 3h"],
+        ["API", "$5 / $15 per 1M"]
+      ],
+      "strengths": [
+        "DALL·E、语音、Python 沙箱、GPT 市场一应俱全",
+        "生态最活跃，第三方 GPTs 接近无限",
+        "o4 在数学 / 逻辑推理上仍是业界标杆"
+      ],
+      "bestFor": "全能型日常 AI 助手",
+      "link": "https://chat.openai.com"
+    },
+    {
+      "id": "gemini",
+      "name": "Gemini",
+      "logoClass": "logo-gemini",
+      "letter": "✦",
+      "provider": "Google",
+      "tagline": "1M 超长上下文 + Google 全家桶深度集成的最大赢家。",
+      "price": "20",
+      "priceNote": "$20 / month · Advanced",
+      "metrics": [
+        ["旗舰模型", "Gemini 3.1 Pro"],
+        ["上下文", "1,000,000 tokens"],
+        ["配额", "≈ 无硬限"],
+        ["API", "$1.25 / $5 per 1M"]
+      ],
+      "strengths": [
+        "1M 超长窗口，可以一次塞入整本书",
+        "Drive / Gmail / Docs 原生集成，办公无缝",
+        "Imagen 4 图像质量在写实场景下领先"
+      ],
+      "bestFor": "Google 生态重度用户",
+      "link": "https://gemini.google.com"
+    },
+    {
+      "id": "cursor",
+      "name": "Cursor",
+      "logoClass": "logo-cursor",
+      "letter": "⌘",
+      "provider": "Anysphere",
+      "tagline": "给开发者用的 AI IDE，直接在编辑器里调用 Claude 与 GPT。",
+      "price": "20",
+      "priceNote": "$20 / month · Pro",
+      "metrics": [
+        ["底层模型", "Claude + GPT-5 + 自研"],
+        ["上下文", "跟随底层模型"],
+        ["配额", "500 快速 / 月"],
+        ["本地", "终端 + 代码库索引"]
+      ],
+      "strengths": [
+        "一个订阅同时拿到 Claude 与 GPT 顶级模型",
+        "全代码库索引 + agent 自动多文件修改",
+        "本地终端调用，命令与代码在同一视窗"
+      ],
+      "bestFor": "认真写代码的开发者",
+      "link": "https://cursor.com"
+    },
+    {
+      "id": "copilot",
+      "name": "GitHub Copilot",
+      "logoClass": "logo-copilot",
+      "letter": "⚙",
+      "provider": "GitHub",
+      "tagline": "最便宜的 IDE 级 AI 助手，$10 拿到 GPT-5 与 Claude 双引擎。",
+      "price": "10",
+      "priceNote": "$10 / month · Pro",
+      "metrics": [
+        ["底层模型", "GPT-5 / Claude / Gemini"],
+        ["上下文", "跟随底层模型"],
+        ["配额", "≈ 无硬限 (IDE)"],
+        ["集成", "VS Code / JetBrains / Neovim"]
+      ],
+      "strengths": [
+        "价格只有其它订阅的一半，无硬性配额",
+        "Chat / Edit / Agent 模式全覆盖",
+        "与 GitHub PR / Actions 深度集成"
+      ],
+      "bestFor": "预算敏感的开发者",
+      "link": "https://github.com/features/copilot"
+    }
+  ]
+}

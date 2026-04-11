@@ -1,0 +1,12 @@
+{
+  "name": "ai-info-website-sync",
+  "version": "1.0.0",
+  "description": "Scraper for AI Pay Transparency data",
+  "main": "scripts/sync-data.js",
+  "scripts": {
+    "sync": "node scripts/sync-data.js"
+  },
+  "dependencies": {
+    "playwright": "^1.40.0"
+  }
+}

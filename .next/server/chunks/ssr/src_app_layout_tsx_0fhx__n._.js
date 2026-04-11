@@ -1,0 +1,3 @@
+module.exports=[27572,a=>{"use strict";var b=a.i(7997);a.s(["default",0,function({children:a}){return(0,b.jsx)("html",{lang:"zh-CN",className:"h-full",children:(0,b.jsx)("body",{className:"min-h-full",children:a})})},"metadata",0,{title:"AI Pay Transparency — AI 订阅透明度对比",description:"一站式对比 Claude、ChatGPT、Gemini、Cursor、Copilot 的配额、功能与性价比"}])},50645,a=>{a.n(a.i(27572))}];
+
+//# sourceMappingURL=src_app_layout_tsx_0fhx__n._.js.map
