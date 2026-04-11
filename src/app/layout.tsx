@@ -2,18 +2,14 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "AI 订阅对比平台",
-  description: "一站式对比 AI 工具的配额、功能与性价比",
+  title: "AI Pay Transparency — AI 订阅透明度对比",
+  description: "一站式对比 Claude、ChatGPT、Gemini、Cursor、Copilot 的配额、功能与性价比",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="zh-CN" className="h-full antialiased">
-      <body className="min-h-full flex flex-col">{children}</body>
+    <html lang="zh-CN" className="h-full">
+      <body className="min-h-full">{children}</body>
     </html>
   );
 }

@@ -1,41 +1,56 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --color-bg: #faf8f5;
-  --color-card: #ffffff;
-  --color-border: #e8e4df;
-  --color-text: #1a1a1a;
-  --color-text-secondary: #6b6560;
-  --color-text-muted: #9e9893;
-  --color-tag-shared-bg: #fef0c7;
-  --color-tag-shared-text: #92400e;
-  --color-tag-independent-bg: #d1fae5;
-  --color-tag-independent-text: #065f46;
-  --color-tag-api-bg: #f3f0ed;
-  --color-tag-api-text: #57534e;
-  --color-insight-bg: #fef9ee;
-  --color-insight-border: #fde68a;
-  --color-tab-active-bg: #f5f0eb;
-  --color-tab-active-border: #d6cfc7;
-  --color-logo-claude: #c4936b;
-  --color-logo-chatgpt: #2ab684;
-  --color-logo-gemini: #4c8bf5;
-  --color-logo-deepseek: #4a6cf7;
-  --color-logo-kimi: #f97316;
-  --color-logo-doubao: #6366f1;
-  --color-logo-qwen: #7c3aed;
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  /* Slate monochromatic system */
+  --color-bg:          #f8fafc;
+  --color-surface:     #ffffff;
+  --color-border:      #e2e8f0;
+  --color-divider:     #f1f5f9;
+
+  /* Text hierarchy */
+  --color-text-900:    #0f172a;
+  --color-text-700:    #334155;
+  --color-text-500:    #64748b;
+  --color-text-400:    #94a3b8;
+
+  /* Accent — Indigo */
+  --color-accent:      #4f46e5;
+  --color-accent-50:   #eef2ff;
+  --color-accent-100:  #e0e7ff;
+  --color-accent-600:  #4f46e5;
+  --color-accent-700:  #4338ca;
+
+  /* Status pills */
+  --color-shared-bg:   #fffbeb;
+  --color-shared-text: #b45309;
+  --color-shared-border: #fde68a;
+
+  --color-indep-bg:    #ecfdf5;
+  --color-indep-text:  #065f46;
+  --color-indep-border: #a7f3d0;
+
+  --color-solo-bg:     #f8fafc;
+  --color-solo-text:   #475569;
+  --color-solo-border: #e2e8f0;
 }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
 
 body {
+  font-family: var(--font-sans);
   background-color: var(--color-bg);
-  color: var(--color-text);
-  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
+  color: var(--color-text-900);
+  line-height: 1.65;
+  font-size: 15px;
 }
+
+/* Smooth scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
