@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 配额看板</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab">总览：共用 vs 独立</button>
+            <button class="tab active">普通聊天</button>
+            <button class="tab">AI 编程工具</button>
+            <button class="tab">CLI 终端</button>
+        </div>
+
+        <!-- Cards -->
+        <div class="cards-container">
+            <!-- Claude Pro Card -->
+            <div class="card claude" data-product="claude">
+                <div class="card-header">
+                    <div class="logo-box">C</div>
+                    <div class="title">
+                        <h2>Claude Pro</h2>
+                        <p>$20 / 月</p>
+                    </div>
+                </div>
+                
+                <div class="section-label">聊天限额</div>
+                <div class="stat-block">
+                    <div class="stat-value">~45条/5小时</div>
+                    <div class="stat-desc">短消息估算，长对话消耗更快</div>
+                    <div class="stat-bar-container">
+                        <div class="stat-bar"><div class="stat-bar-fill"></div></div>
+                    </div>
+                </div>
+                
+                <div class="rating">相对宽裕度 <span class="stars">★★★<span class="stars-dim">☆☆</span></span></div>
+                
+                <div class="section-label">重置周期</div>
+                <div class="tags">
+                    <div class="tag-group">
+                        <span class="tag outlined">5 小时一次</span>
+                        <span class="tag outlined">还有 7 天总量上限</span>
+                    </div>
+                </div>
+
+                <div class="section-label">模型</div>
+                <div class="tags">
+                    <div class="tag-group">
+                        <span class="tag outlined">Sonnet 4.6 (默认)</span>
+                        <span class="tag outlined">Opus 4.6 (更贵更快耗完)</span>
+                    </div>
+                </div>
+
+                <div id="claude-comments"></div>
+            </div>
+
+            <!-- ChatGPT Plus Card -->
+            <div class="card chatgpt" data-product="chatgpt">
+                <div class="card-header">
+                    <div class="logo-box">G</div>
+                    <div class="title">
+                        <h2>ChatGPT Plus</h2>
+                        <p>$20 / 月</p>
+                    </div>
+                </div>
+                
+                <div class="section-label">聊天限额</div>
+                <div class="stat-block">
+                    <div class="stat-value">动态浮动</div>
+                    <div class="stat-desc">GPT-5 / o3 重度用量时会被降级至 mini</div>
+                    <div class="stat-bar-container">
+                        <div class="stat-bar"><div class="stat-bar-fill"></div></div>
+                    </div>
+                </div>
+                
+                <div class="rating">相对宽裕度 <span class="stars">★★★★<span class="stars-dim">☆</span></span></div>
+                
+                <div class="section-label">重置周期</div>
+                <div class="tags">
+                    <div class="tag-group">
+                        <span class="tag outlined">5 小时 (部分功能每周)</span>
+                    </div>
+                </div>
+
+                <div class="section-label">模型</div>
+                <div class="tags">
+                    <div class="tag-group">
+                        <span class="tag outlined">GPT-5 / GPT-5.4 / o3</span>
+                        <span class="tag outlined">超限自动降 mini</span>
+                    </div>
+                </div>
+
+                <div id="chatgpt-comments"></div>
+            </div>
+
+            <!-- Google AI Pro Card -->
+            <div class="card gemini" data-product="gemini">
+                <div class="card-header">
+                    <div class="logo-box">G</div>
+                    <div class="title">
+                        <h2>Google AI Pro</h2>
+                        <p>$19.99 / 月</p>
+                    </div>
+                </div>
+                
+                <div class="section-label">聊天限额</div>
+                <div class="stat-block">
+                    <div class="stat-value">~500条/天</div>
+                    <div class="stat-desc">Gemini App 对话 (明确公布)</div>
+                    <div class="stat-bar-container">
+                        <div class="stat-bar"><div class="stat-bar-fill"></div></div>
+                    </div>
+                </div>
+                
+                <div class="rating">相对宽裕度 <span class="stars">★★★★★</span></div>
+                
+                <div class="section-label">重置周期</div>
+                <div class="tags">
+                    <div class="tag-group">
+                        <span class="tag outlined">每天凌晨重置</span>
+                    </div>
+                </div>
+
+                <div class="section-label">模型</div>
+                <div class="tags">
+                    <div class="tag-group">
+                        <span class="tag outlined">Gemini 3.1 Pro (全量)</span>
+                    </div>
+                </div>
+
+                <div id="gemini-comments"></div>
+            </div>
+        </div>
+
+        <!-- Legend Area (From first picture) -->
+        <div class="legend-section">
+            <div class="legend-row">
+                <div class="legend-item"><div class="legend-color c-orange"></div> 共用同一配额池</div>
+                <div class="legend-item"><div class="legend-color c-green"></div> 各功能独立配额</div>
+                <div class="legend-item"><div class="legend-color c-grey"></div> 需单独付 API 费</div>
+            </div>
+            <div class="legend-row">
+                <div class="legend-item"><div class="legend-color c-orange"></div> 共用同一配额池 (用一个影响另一个)</div>
+                <div class="legend-item"><div class="legend-color c-green"></div> 独立配额 (互不影响)</div>
+                <div class="legend-item"><div class="legend-color c-grey"></div> 需单独付 API 费用</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Inject JS for interactions and comments -->
+    <script src="main.js"></script>
+</body>
+</html>
