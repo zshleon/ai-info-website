@@ -704,6 +704,7 @@ footer{margin-top:80px;padding:60px 0 50px;border-top:1px solid var(--border-sof
 /* ──────────────────────────────────────────────
    Data
    ────────────────────────────────────────────── */
+<<<<<<< HEAD
 const PRODUCTS = [
   {
     id:"claude", name:"Claude", logoClass:"logo-claude", letter:"C", provider:"Anthropic",
@@ -886,6 +887,37 @@ function renderCards(){
     const card = document.createElement("article");
     card.className = "card reveal in";
     card.style.transitionDelay = (i*60)+"ms";
+=======
+/* ──────────────────────────────────────────────
+   Data Loading & Rendering
+   ────────────────────────────────────────────── */
+async function initApp() {
+  try {
+    const response = await fetch('data/products.json');
+    const data = await response.json();
+    
+    // Update timestamp
+    const dateEl = document.querySelector('footer .last-updated');
+    if (dateEl) dateEl.textContent = `Last synced · ${data.meta.last_updated}`;
+
+    renderCards(data.products);
+    
+    // Initialize reveal animations after cards are rendered
+    initReveal();
+  } catch (err) {
+    console.error('Failed to load products:', err);
+    document.getElementById("productGrid").innerHTML = '<div class="error">Data sync failed. Please check connection.</div>';
+  }
+}
+
+function renderCards(products) {
+  const grid = document.getElementById("productGrid");
+  grid.innerHTML = ''; // Clear fallback
+  products.forEach((p, i) => {
+    const card = document.createElement("article");
+    card.className = "card reveal";
+    card.style.transitionDelay = (i * 60) + "ms";
+>>>>>>> 3d9051a0c9f48fcc5eabf8d4e92ec69f6d8d98b2
     card.innerHTML = `
       <div class="card-head">
         <div class="logo ${p.logoClass}">${p.letter}</div>
@@ -894,11 +926,16 @@ function renderCards(){
           <div class="card-provider">${p.provider}</div>
         </div>
       </div>
+<<<<<<< HEAD
       <p class="card-tagline">${escapeHTML(T(p.tagline))}</p>
+=======
+      <p class="card-tagline">${p.tagline}</p>
+>>>>>>> 3d9051a0c9f48fcc5eabf8d4e92ec69f6d8d98b2
       <div class="price-row">
         <span class="price-amt">$${p.price}</span>
         <span class="price-unit">/ month</span>
       </div>
+<<<<<<< HEAD
       <div class="price-note">${escapeHTML(T(p.priceNote))}</div>
       <div class="metric-list">
         ${metrics.map(m=>`
@@ -922,10 +959,36 @@ function renderCards(){
         <form class="comment-form" data-id="${p.id}">
           <input type="text" placeholder="${phTxt}" maxlength="180" required />
           <button type="submit">${sendTxt}</button>
+=======
+      <div class="price-note">${p.priceNote}</div>
+      <div class="metric-list">
+        ${p.metrics.map(m => `
+          <div class="metric">
+            <span class="metric-k">${m[0]}</span>
+            <span class="metric-v">${m[1]}</span>
+          </div>`).join("")}
+      </div>
+      <div class="strengths">
+        ${p.strengths.map(s => `<div class="strength">${s}</div>`).join("")}
+      </div>
+      <div class="card-cta">
+        <div class="best-for">Best for<span>${p.bestFor}</span></div>
+        <a class="ext-link" href="${p.link}" target="_blank" rel="noopener">
+          访问 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+      <div class="comments">
+        <div class="comments-title">Community Notes · 读者评论</div>
+        <div class="comment-list" data-list="${p.id}"></div>
+        <form class="comment-form" data-id="${p.id}">
+          <input type="text" placeholder="分享你的使用体验…" maxlength="180" required />
+          <button type="submit">发送</button>
+>>>>>>> 3d9051a0c9f48fcc5eabf8d4e92ec69f6d8d98b2
         </form>
       </div>
     `;
     grid.appendChild(card);
+<<<<<<< HEAD
   });
   PRODUCTS.forEach(p=>renderComments(p.id));
 }
@@ -997,10 +1060,16 @@ document.getElementById("themeBtn").addEventListener("click",()=>{
   localStorage.setItem("apt-theme", THEME);
   applyTheme();
 });
+=======
+    renderComments(p.id); // Load comments for this card
+  });
+}
+>>>>>>> 3d9051a0c9f48fcc5eabf8d4e92ec69f6d8d98b2
 
 /* ──────────────────────────────────────────────
    Comment persistence (localStorage)
    ────────────────────────────────────────────── */
+<<<<<<< HEAD
 function loadAll(){
   try{ return JSON.parse(localStorage.getItem("apt-comments")||"{}"); }
   catch{ return {}; }
@@ -1012,35 +1081,55 @@ function saveComment(id, txt){
   all[id] = all[id] || [];
   all[id].push({who: LANG==="zh"?"匿名用户":"Anonymous", txt, time:Date.now()});
   saveAll(all);
+=======
+const MEM = {};
+function loadComments(id) { return MEM[id] || []; }
+function saveComment(id, txt) {
+  MEM[id] = MEM[id] || [];
+  MEM[id].push({ who: "匿名用户", txt, time: Date.now() });
+>>>>>>> 3d9051a0c9f48fcc5eabf8d4e92ec69f6d8d98b2
   renderComments(id);
 }
-function renderComments(id){
-  const box = document.querySelector('[data-list="'+id+'"]');
-  if(!box) return;
+function renderComments(id) {
+  const box = document.querySelector('[data-list="' + id + '"]');
+  if (!box) return;
   const list = loadComments(id);
+<<<<<<< HEAD
   const emptyTxt = box.dataset.empty;
   if(list.length===0){
     box.innerHTML = '<div class="comment-empty">'+emptyTxt+'</div>';
   }else{
     box.innerHTML = list.slice(-5).reverse().map(c=>
       `<div class="comment-item"><span class="who">${escapeHTML(c.who)}</span>${escapeHTML(c.txt)}</div>`
+=======
+  if (list.length === 0) {
+    box.innerHTML = '<div class="comment-empty">还没有评论，来当第一个吧。</div>';
+  } else {
+    box.innerHTML = list.slice(-5).reverse().map(c =>
+      `<div class="comment-item"><span class="who">${c.who}</span>${escapeHTML(c.txt)}</div>`
+>>>>>>> 3d9051a0c9f48fcc5eabf8d4e92ec69f6d8d98b2
     ).join("");
   }
 }
 
-document.addEventListener("submit",e=>{
-  if(e.target.matches(".comment-form")){
+function escapeHTML(s) {
+  return s.replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+document.addEventListener("submit", e => {
+  if (e.target.matches(".comment-form")) {
     e.preventDefault();
     const id = e.target.dataset.id;
     const input = e.target.querySelector("input");
     const val = input.value.trim();
-    if(val){ saveComment(id,val); input.value=""; }
+    if (val) { saveComment(id, val); input.value = ""; }
   }
 });
 
 /* ──────────────────────────────────────────────
    Reveal on scroll
    ────────────────────────────────────────────── */
+<<<<<<< HEAD
 const io = new IntersectionObserver((entries)=>{
   entries.forEach(e=>{
     if(e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target); }
@@ -1053,6 +1142,22 @@ document.querySelectorAll(".reveal").forEach(el=>io.observe(el));
    ────────────────────────────────────────────── */
 applyTheme();
 applyLang();
+=======
+function initReveal() {
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add("in");
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: .12, rootMargin: "0px 0px -40px 0px" });
+  document.querySelectorAll(".reveal").forEach(el => io.observe(el));
+}
+
+// Global invocation
+initApp();
+>>>>>>> 3d9051a0c9f48fcc5eabf8d4e92ec69f6d8d98b2
 </script>
 </body>
 </html>
